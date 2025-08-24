@@ -1,7 +1,70 @@
+/* Oculta la barra de scroll en navegadores modernos */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari, Opera */
+}
+/* Margen responsivo para el banner promocional */
+.promo-banner-responsive {
+  /* Elimina los márgenes aquí para que mx-4 de Tailwind funcione */
+}
+@media (min-width: 640px) {
+  .promo-banner-responsive {
+    /* sin margen para permitir mx-4 */
+  }
+}
+@media (min-width: 1024px) {
+  .promo-banner-responsive {
+    /* sin margen para permitir mx-4 */
+  }
+}
+/* Ocultar scrollbars en todos los navegadores */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden !important;
+  overflow-y: auto;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: auto;
+}
+
+body.overflow-hidden {
+  overflow-y: hidden !important;
+}
+
+/* Para navegadores Webkit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Para Firefox */
+html {
+  scrollbar-width: none !important;
+}
+/* Oculta el botón de eliminar del carrito en móvil, visible solo en PC/tablet */
+@media (max-width: 767px) {
+  .cart-delete-btn { display: none !important; }
+}
+@media (min-width: 768px) {
+  .cart-delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 4px;
+    padding: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: background 0.2s;
+  }
+}
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: transparent; /* Cambiando el fondo global a transparente */
   --foreground: #171717;
 }
 
@@ -12,15 +75,13 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.cart-delete-btn {
+  border-radius: 0; /* Eliminando bordes redondeados */
 }
