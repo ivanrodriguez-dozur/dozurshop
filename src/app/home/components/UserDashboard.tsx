@@ -29,155 +29,6 @@ function getLevel(xp: number) {
   }
   return { level, nextLevelXp: next, currentLevelXp: next / 2 };
 }
-
-// --- COMPONENTE PRINCIPAL ---
-
-export default function UserDashboard({ userData }: { userData?: any }) {
-  // Simulación de datos de usuario (reemplaza con tus datos reales)
-  const [avatar, setAvatar] = useState(userData?.avatar_url || "https://api.dicebear.com/7.x/adventurer/svg?seed=Tom");
-  const [nickname, setNickname] = useState(userData?.nickname || "Invitado");
-  const [xp, setXp] = useState(userData?.xp || 0); // XP total
-  const [booms, setBooms] = useState(userData?.booms || 0); // Likes
-  const [videos, setVideos] = useState(userData?.videos || 0); // Videos vistos
-  const [time, setTime] = useState(userData?.time || 0); // Tiempo en minutos
-  const [coins, setCoins] = useState(Math.floor(xp / 100));
-  const [challengeIdx, setChallengeIdx] = useState(() => {
-    // Un reto diario por fecha
-    const today = new Date().toISOString().slice(0, 10);
-    return parseInt(today.replace(/-/g, ""), 10) % CHALLENGES.length;
-  });
-  const [showInfo, setShowInfo] = useState<string | null>(null);
-  const [showLogin, setShowLogin] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(false);
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-  const [isLogged, setIsLogged] = useState(false);
-  // Lógica de nivel: siempre mínimo 1
-  const { level, nextLevelXp, currentLevelXp } = getLevel(Math.max(xp, 0));
-  const progress = Math.min(1, (xp - currentLevelXp) / (nextLevelXp - currentLevelXp));
-
-  // --- INSTRUCCIONES DE EDICIÓN ---
-  // Puedes conectar los estados a tu backend o contexto global
-  // Puedes reemplazar los gráficos por librerías como recharts, chart.js, nivo, etc.
-
-  // --- UI PRINCIPAL ---
-  return (
-    <>
-      <div
-        className="w-full mx-auto p-3 rounded-3xl bg-gradient-to-br from-blue-50 to-purple-100 shadow-xl relative"
-        style={{
-          margin: 'max(10px, 2vw)',
-          maxWidth: '360px',
-          minWidth: '0',
-          width: '100%',
-        }}
-      >
-        {/* Avatar y nickname */}
-        <div className="flex flex-col items-center mb-4">
-          <div className="relative">
-            <img
-              src={avatar}
-              alt="avatar"
-              className="w-24 h-24 rounded-full border-4 border-yellow-400 shadow-lg bg-white object-cover"
-              style={{ objectFit: "cover" }}
-            />
-            <button
-              className="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow cursor-pointer"
-              title="Cambiar avatar"
-              // onClick: abre selector de avatar
-            >
-              <FaBolt className="text-yellow-400" />
-            </button>
-          </div>
-          <div
-            className="w-full flex flex-col items-center mt-2 bg-white/80 rounded-xl p-3 shadow cursor-pointer"
-            onClick={() => setShowLogin(true)}
-            tabIndex={0}
-          >
-            <div className="font-bold text-lg mb-1">@{nickname}</div>
-            <input
-              className="px-2 py-1 rounded border text-center text-sm"
-              value={nickname}
-              onChange={e => setNickname(e.target.value)}
-              style={{ maxWidth: 140 }}
-            />
-          </div>
-        </div>
-        {/* Carrusel de secciones */}
-        <div className="flex overflow-x-auto gap-4 pb-2 snap-x">
-          {/* Coins */}
-          <SectionCard
-            icon={<FaCoins className="text-yellow-400 text-2xl" />}
-            title="Coins"
-            value={coins}
-            info="Los coins se obtienen por puntos de experiencia (XP). Cada 100 XP = 1 coin. Sirven para desbloquear recompensas."
-            showInfo={showInfo === "coins"}
-            onInfo={() => setShowInfo(showInfo === "coins" ? null : "coins")}
-          />
-          {/* Retos diarios */}
-          <SectionCard
-            icon={<FaTrophy className="text-pink-500 text-2xl" />}
-            title="Reto diario"
-            value={<span className="text-xs font-semibold">{CHALLENGES[challengeIdx]}</span>}
-            info="Solo puedes cumplir un reto diario. Al completarlo, ganas XP extra."
-            showInfo={showInfo === "reto"}
-            onInfo={() => setShowInfo(showInfo === "reto" ? null : "reto")}
-          />
-          {/* Booms */}
-          <SectionCard
-            icon={<FaFire className="text-orange-500 text-2xl" />}
-            title="Booms"
-            value={booms}
-            info="Los booms son likes a fotos o videos. Cada boom = 1 XP."
-            showInfo={showInfo === "booms"}
-            onInfo={() => setShowInfo(showInfo === "booms" ? null : "booms")}
-          />
-          {/* Tiempo */}
-          <SectionCard
-            icon={<FaClock className="text-green-500 text-2xl" />}
-            title="Tiempo"
-            value={`${Math.floor(time / 60)}h ${time % 60}m`}
-            info="Por cada hora en la app ganas 5 XP."
-            showInfo={showInfo === "tiempo"}
-            onInfo={() => setShowInfo(showInfo === "tiempo" ? null : "tiempo")}
-          />
-          {/* Level */}
-          <SectionCard
-            icon={<FaCrown className="text-purple-500 text-2xl" />}
-            title="Level"
-            value={level}
-            info={`Nivel actual. Sube de nivel acumulando XP. Nivel 1: 500 XP, Nivel 2: 1000 XP, Nivel 3: 2000 XP, etc.`}
-            showInfo={showInfo === "level"}
-            onInfo={() => setShowInfo(showInfo === "level" ? null : "level")}
-          >
-            {/* Barra de progreso de nivel */}
-            <div className="w-full h-2 bg-gray-200 rounded mt-2">
-              <div
-                className="h-2 rounded bg-gradient-to-r from-yellow-400 to-purple-400"
-                style={{ width: `${progress * 100}%` }}
-              />
-            </div>
-            <div className="text-xs text-gray-500 mt-1 text-center">
-              {xp - currentLevelXp} / {nextLevelXp - currentLevelXp} XP para el siguiente nivel
-            </div>
-          </SectionCard>
-          {/* Estadísticas (espacio para gráficos) */}
-          <SectionCard
-            icon={<FaBolt className="text-indigo-500 text-2xl" />}
-            title="Estadísticas"
-            value={<span className="text-xs">Gráficos aquí</span>}
-            info="Visualiza tu progreso diario, semanal y mensual. Puedes usar gráficos de barras, líneas o pastel."
-            showInfo={showInfo === "stats"}
-            onInfo={() => setShowInfo(showInfo === "stats" ? null : "stats")}
-          >
-            {/* Aquí puedes insertar un gráfico dinámico con Chart.js, Recharts, etc. */}
-            <div className="w-32 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center text-gray-400">
-              {/* Ejemplo: <BarChart data={...} /> */}
-              [Gráfico]
-            </div>
-          </SectionCard>
-        </div>
-      </div>
       {showLogin && (
         <>
           <div
@@ -186,10 +37,11 @@ export default function UserDashboard({ userData }: { userData?: any }) {
           ></div>
           <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div
-              className="bg-white border border-gray-200 rounded-xl shadow-xl p-4 flex flex-col gap-2 max-w-[90vw] w-full mx-4 relative"
-              style={{ maxWidth: 320 }}
+              className="bg-white border border-gray-200 rounded-xl shadow-xl p-6 flex flex-col gap-4 max-w-xs w-full mx-4 relative"
+              style={{ maxWidth: 340, top: '50%', left: '50%', transform: 'translate(-50%, -50%)', position: 'absolute' }}
               onClick={e => e.stopPropagation()}
             >
+              {/* Login/Logout solo en el modal */}
               {!isLogged && (
                 <>
                   <input type="email" placeholder="Correo" className="border rounded px-2 py-1 text-xs w-full" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} />
