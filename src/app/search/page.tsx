@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import HeaderAvanzado from '../../components/HeaderAvanzado';
+import PanelSuperior from '../home/components/PanelSuperior';
 import ProductCard from '../../components/ProductCard';
 import { fetchProducts } from '../../lib/products';
 
@@ -17,7 +17,7 @@ export default function SearchPage() {
 
   return (
     <main className="min-h-screen pb-20">
-  <HeaderAvanzado pageTitle="Dozur Shop" />
+  <PanelSuperior pageTitle="Dozur Shop" />
       <div className="p-4">
         <input
           aria-label="Buscar productos"

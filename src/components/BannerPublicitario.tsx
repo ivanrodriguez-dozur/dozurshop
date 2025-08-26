@@ -4,9 +4,9 @@ import Image from "next/image";
 // Configuración editable del banner
 const bannerConfig = {
   images: [
-    "/productos/1.jpg",
-    "/productos/2.jpg",
-    "/productos/3.jpg",
+    "https://ktpajrnflcqwgaoaywuu.supabase.co/storage/v1/object/public/products/1.jpg",
+    "https://ktpajrnflcqwgaoaywuu.supabase.co/storage/v1/object/public/products/10.jpg",
+    "https://ktpajrnflcqwgaoaywuu.supabase.co/storage/v1/object/public/products/2.jpg",
   ],
   title: "Bienvenido Micrero! Los Mejores descuentos se van pronto", // Edita este texto a tu gusto
   timerSeconds: 24 * 60 * 60, // Tiempo inicial del reloj en segundos (ejemplo: 24 horas)

@@ -27,7 +27,7 @@ export default function Carrito() {
         <>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
             {items.map(item => (
-              <div key={item.id + '-' + item.size} style={{ display: 'flex', alignItems: 'center', background: '#fff', borderRadius: 16, boxShadow: '0 2px 8px #0001', padding: 12, position: 'relative', cursor: 'pointer' }} onClick={() => router.push(`/product/${item.id}`)}>
+              <div key={item.id + '-' + item.size} style={{ display: 'flex', alignItems: 'center', background: '#fff', borderRadius: 16, boxShadow: '0 2px 8px #0001', padding: 12, position: 'relative', cursor: 'pointer' }} onClick={() => router.push(`/product/${item.slug ?? item.id}`)}>
                 <Image src={item.image} alt={item.name} width={64} height={64} style={{ borderRadius: 12, background: '#f5f5f5' }} />
                 <div style={{ flex: 1, marginLeft: 16 }}>
                   <div style={{ fontWeight: 600, fontSize: 16 }}>{item.name}</div>

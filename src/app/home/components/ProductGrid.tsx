@@ -30,7 +30,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, favorites, onProduc
 										product={product}
 										onFavorite={() => onFavorite(product)}
 										isFavorite={favorites.includes(product.id)}
-										onProductClick={() => onProductClick(product.id)}
+										onProductClick={() => onProductClick(product.slug ?? product.id)}
 									/>
 									: null)
 							))}

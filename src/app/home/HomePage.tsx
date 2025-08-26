@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import React from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useShopping } from "./hooks/useShopping";
 import { useFavoritesStore } from '../../store/favorites';
@@ -8,20 +9,14 @@ import ProductDetail from './ProductDetail';
 import CartView from './components/CartView';
 import { useProducts } from "./hooks/useProducts";
 import BannerPublicitario from "../../components/BannerPublicitario";
-import HeaderAvanzado from "../../components/HeaderAvanzado";
+import PanelSuperior from "./components/PanelSuperior";
 import ProductGrid from "./components/ProductGrid";
 import ProductCard from "../../components/ProductCard";
-import { suggestedIcons } from "../../components/suggestedIcons";
 
-// Mapeo de key de icono a categoría de producto
-const iconKeyToCategory: Record<string, string> = {
-  "ver todo": "all",
-  "zapatillas": "calzado",
-  "camisas": "ropa",
-  "pantalonetas": "ropa",
-  "medias": "ropa",
-  "accesorios": "accesorios"
-};
+import { etiquetas, estilosEtiquetas } from "./etiquetas";
+
+
+
 import { useToast } from "../context/ToastContext";
 // import BottomNav from "./BottomNav";
 import { Product } from './types';
@@ -29,6 +24,8 @@ import Modal from './components/Modal';
 import ProductSuggestionList from './components/ProductSuggestionList';
 
 export default function HomePage() {
+  // Ref para la grilla de productos
+  const gridRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
   const {
     cart,
@@ -77,7 +74,7 @@ export default function HomePage() {
 
   return (
     <div>
-      <HeaderAvanzado pageTitle="Dozur Shop" />
+  <PanelSuperior pageTitle="Dozur Shop" />
       <Modal open={showNotifications} onClose={() => setShowNotifications(false)} side>
         <h2 style={{ color: '#b5ff00', fontWeight: 700, fontSize: 20, marginBottom: 16 }}>Notificaciones</h2>
         <div style={{ color: '#fff', fontSize: 16 }}>No tienes notificaciones nuevas</div>
@@ -125,56 +122,61 @@ export default function HomePage() {
                       product={product}
                       onFavorite={handleFavorite}
                       isFavorite={favProducts.some(f => f.id === product.id)}
-                      onProductClick={() => router.push(`/product/${product.id}`)}
+                      onProductClick={() => router.push(`/product/${product.slug ?? product.id}`)}
                     />
                   </div>
                 ))}
               </div>
             </div>
-            {/* Etiquetas de categorías como iconos en círculo */}
-            <div style={{
-              display: 'flex',
-              gap: 24,
-              margin: '0 0 18px 0',
-              overflowX: 'auto',
-              flexWrap: 'nowrap',
-              paddingBottom: 4,
-            }}
-            className="category-tags-row"
+            {/* Etiquetas de categorías como iconos en círculo (selección individual, separación y vibración) */}
+            {/* Etiquetas de categorías (editable en etiquetas.ts) */}
+            {/* Etiquetas de categorías (solo icono, colores configurables en etiquetas.ts) */}
+            <div
+              className="w-full overflow-x-auto scrollbar-hide"
+              style={{ WebkitOverflowScrolling: 'touch', paddingLeft: 18, marginBottom: 8 }}
             >
-              {suggestedIcons.map(({ key, icon }) => (
-                <button
-                  key={key}
-                  onClick={() => setActiveCategory(iconKeyToCategory[key] || "all")}
-                  style={{
-                    background: activeCategory === (iconKeyToCategory[key] || "all") ? '#181818' : '#b5ff00',
-                    color: activeCategory === (iconKeyToCategory[key] || "all") ? '#b5ff00' : '#181818',
-                    borderRadius: '50%',
-                    width: 56,
-                    height: 56,
-                    minWidth: 56,
-                    minHeight: 56,
-                    maxWidth: 56,
-                    maxHeight: 56,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 32,
-                    border: 'none',
-                    outline: 'none',
-                    cursor: 'pointer',
-                    transition: 'background 0.2s, color 0.2s',
-                    boxShadow: activeCategory === (iconKeyToCategory[key] || "all") ? '0 0 0 2px #b5ff00' : 'none',
-                    flex: '0 0 auto',
-                  }}
-                  className="category-icon-btn-pc category-icon-btn-mobile"
-                  title={key.charAt(0).toUpperCase() + key.slice(1)}
-                >
-                  {icon && typeof icon === 'function' ? icon({}) : null}
-                </button>
-              ))}
+              <div
+                className="flex flex-nowrap py-2"
+                style={{ gap: 24 }}
+              >
+                {etiquetas.map(({ icon, categoria, descripcion }) => {
+                  // Solo una categoría puede estar activa a la vez
+                  const isActive = activeCategory === categoria;
+                  return (
+                    <button
+                      key={categoria}
+                      className={`flex flex-col items-center justify-center min-w-[56px] min-h-[56px] max-w-[56px] max-h-[56px] p-0 rounded-full ${
+                        isActive
+                          ? `${estilosEtiquetas.colores.activo.bg} ${estilosEtiquetas.colores.activo.text} ${estilosEtiquetas.colores.activo.border} scale-105`
+                          : `${estilosEtiquetas.colores.inactivo.bg} ${estilosEtiquetas.colores.inactivo.text} ${estilosEtiquetas.colores.inactivo.border}`
+                      } shadow ${estilosEtiquetas.colores.hover} transition-transform duration-200 transform hover:scale-110 focus:outline-none`}
+                      onClick={() => {
+                        if (!isActive) {
+                          if (typeof window !== 'undefined' && 'vibrate' in window.navigator) {
+                            window.navigator.vibrate(30);
+                          }
+                          setActiveCategory(categoria);
+                          // Scroll suave a la grilla de productos
+                          setTimeout(() => {
+                            if (gridRef.current) {
+                              gridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                          }, 80); // Pequeño delay para UX
+                        }
+                      }}
+                      title={descripcion}
+                      style={{ flex: '0 0 auto' }}
+                    >
+                      <span className={`${isActive ? estilosEtiquetas.icono.activo : estilosEtiquetas.icono.inactivo} mb-1`}>
+                        {icon && typeof icon === 'function' ? React.createElement(icon) : null}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
             {/* Productos en grilla */}
+            <div ref={gridRef} />
             <ProductGrid
               products={filteredProducts}
               favorites={favoriteIds}
@@ -197,7 +199,7 @@ export default function HomePage() {
         {activeTab === 'cart' && (
           <CartView
             cart={cart}
-            // onUpdateQuantity={updateCartQuantity}
+            onUpdateQuantity={() => {}}
             onClose={() => setActiveTab('home')}
           />
         )}

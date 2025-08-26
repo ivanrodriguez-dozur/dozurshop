@@ -233,7 +233,7 @@ export default function Favoritos() {
                   }}
                 >
                   <img
-                    src={product.image}
+                    src={product.image_url}
                     alt={product.name}
                     style={{
                       maxWidth: '100%',

@@ -7,7 +7,7 @@ export interface Product {
   price: number;
   originalPrice?: number;
   category: string;
-  image: string;
+  image_url: string;
   tags?: string[];
   stock?: number;
   description?: string;

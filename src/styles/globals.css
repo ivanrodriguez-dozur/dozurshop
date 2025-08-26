@@ -1,3 +1,8 @@
+/* Confetti y avatar celebration */
+.animate-confetti { animation: confetti-fall 1.2s linear forwards; }
+@keyframes confetti-fall { 0% { opacity:1; transform:translateY(-40px) scale(1);} 100% { opacity:0; transform:translateY(120vh) scale(1.2);} }
+.animate-grow-disappear { animation: grow-disappear 1.2s cubic-bezier(.7,1.7,.7,1) forwards; }
+@keyframes grow-disappear { 0% { transform:scale(1);} 80% { transform:scale(2.5);} 100% { opacity:0; transform:scale(3);} }
 /* src/styles/globals.css */
 @import "tailwindcss";
 

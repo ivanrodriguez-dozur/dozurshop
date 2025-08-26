@@ -1,4 +1,4 @@
-import HeaderAvanzado from '../../components/HeaderAvanzado';
+import PanelSuperior from '../home/components/PanelSuperior';
 
 const notifications = [
   { id: 1, title: '¡Promo especial!', message: '20% de descuento en zapatillas.', type: 'promo', date: '2025-08-21' },
@@ -9,7 +9,7 @@ const notifications = [
 export default function NotificationsPage() {
   return (
     <main className="min-h-screen pb-20">
-  <HeaderAvanzado pageTitle="Dozur Shop" />
+  <PanelSuperior pageTitle="Dozur Shop" />
       <section className="px-4 mt-4">
         <h2 className="text-white text-lg font-bold mb-2">Notificaciones</h2>
         <ul className="space-y-4">

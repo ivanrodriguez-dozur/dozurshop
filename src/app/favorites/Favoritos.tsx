@@ -44,8 +44,23 @@ export default function Favoritos() {
             {slides.length > 0 && (
               <div style={{ display: 'grid', gridAutoFlow: 'column', gridTemplateRows: '1fr 1fr', gap: 32, width: 'max-content', minWidth: 700, height: 600 }}>
                 {slides[carouselIndex].map(product => (
-                  <div key={product.id} style={{ background: '#f5f5f5', borderRadius: 18, boxShadow: '0 2px 12px #0001', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 18, position: 'relative', height: 320, minWidth: 320, maxWidth: 420, cursor: 'pointer', overflow: 'hidden' }} onClick={() => router.push(`/product/${product.id}`)}>
-                    <Image src={product.image} alt={product.name} width={520} height={300} style={{ objectFit: 'cover', borderRadius: 14, width: '100%', height: 260, marginBottom: 0 }} />
+                  <div key={product.id} style={{ background: '#f5f5f5', borderRadius: 18, boxShadow: '0 2px 12px #0001', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 18, position: 'relative', height: 320, minWidth: 320, maxWidth: 420, cursor: 'pointer', overflow: 'hidden' }} onClick={() => router.push(`/product/${product.slug}`)}>
+                    {(() => {
+                      const DEFAULT = 'https://placehold.co/520x300?text=Sin+Imagen';
+                      const { buildSupabasePublicUrl } = require('../../../lib/resolveImageUrl');
+                      const src = product.image_url && product.image_url.trim() !== '' ? buildSupabasePublicUrl(product.image_url) : DEFAULT;
+                      return (
+                        <Image
+                          src={src}
+                          alt={product.name}
+                          width={520}
+                          height={300}
+                          style={{ objectFit: 'cover', borderRadius: 14, width: '100%', height: 260, marginBottom: 0 }}
+                          onError={(e: any) => { e.currentTarget.src = DEFAULT; }}
+                          unoptimized={true}
+                        />
+                      );
+                    })()}
                     {/* Precio en la esquina inferior izquierda */}
                     <div style={{ position: 'absolute', left: 16, bottom: 16, background: '#181818', color: '#fff', borderRadius: 12, padding: '6px 18px', fontWeight: 700, fontSize: 22, boxShadow: '0 2px 8px #0002', zIndex: 2 }}>
                       {`$${product.price.toLocaleString('es-CO')}`}

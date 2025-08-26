@@ -36,7 +36,7 @@ export default function ProductDetail({ product, onBack, onAddToCart, onFavorite
   const [color, setColor] = useState('blue');
   const { showToast } = useToast();
   // Galería de imágenes (solo una imagen disponible)
-  const images: string[] = [product.image];
+  const images: string[] = [product.image_url];
   const [currentImg, setCurrentImg] = useState(0);
   // Lógica de tallas según tipo
   let sizes: (string|number)[] = [];
@@ -50,7 +50,7 @@ export default function ProductDetail({ product, onBack, onAddToCart, onFavorite
   // Favoritos
   const handleFavorite = () => {
     onFavorite();
-    showToast(isFavorite ? "Eliminado de favoritos" : "Agregado a favoritos");
+    showToast(!isFavorite ? "Agregado a favoritos" : "Eliminado de favoritos");
   };
   // Add to cart
   const handleAddToCart = () => {
@@ -69,7 +69,7 @@ export default function ProductDetail({ product, onBack, onAddToCart, onFavorite
           onPointerLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
         >&larr;</button>
         <button
-          onClick={onFavorite}
+          onClick={handleFavorite}
           style={{background: 'none', border: 'none', cursor: 'pointer', transition: 'transform 0.15s'}}
           onPointerDown={e => (e.currentTarget.style.transform = 'scale(0.92)')}
           onPointerUp={e => (e.currentTarget.style.transform = 'scale(1)')}
@@ -90,24 +90,32 @@ export default function ProductDetail({ product, onBack, onAddToCart, onFavorite
       <div style={{width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '18px 0 0 0', position: 'relative', overflow: 'hidden'}}>
         {/* Galería deslizable */}
         <button onClick={handlePrevImg} style={{position:'absolute',left:0,top:'50%',transform:'translateY(-50%)',background:'rgba(255,255,255,0.7)',border:'none',borderRadius:16,padding:8,zIndex:2,cursor:'pointer',fontSize:22,display:images.length>1?'block':'none'}}>‹</button>
-        <Image
-          src={images[currentImg]}
-          alt={product.name}
-          width={500}
-          height={340}
-          style={{
-            width: '100%',
-            maxWidth: 500,
-            height: 340,
-            objectFit: 'contain',
-            borderRadius: 24,
-            background: '#f5f5f5',
-            boxShadow: '0 2px 16px #0001',
-            margin: '0 auto',
-            display: 'block',
-            transition: 'all 0.3s'
-          }}
-        />
+        {(() => {
+          const supabaseUrl = "https://ktpajrnflcqwgaoaywuu.supabase.co/storage/v1/object/public/products/";
+          const imageUrl = images[currentImg] && !images[currentImg].startsWith("http")
+            ? supabaseUrl + images[currentImg]
+            : images[currentImg];
+          return (
+            <Image
+              src={imageUrl}
+              alt={product.name}
+              width={500}
+              height={340}
+              style={{
+                width: '100%',
+                maxWidth: 500,
+                height: 340,
+                objectFit: 'contain',
+                borderRadius: 24,
+                background: '#f5f5f5',
+                boxShadow: '0 2px 16px #0001',
+                margin: '0 auto',
+                display: 'block',
+                transition: 'all 0.3s'
+              }}
+            />
+          );
+        })()}
         <button onClick={handleNextImg} style={{position:'absolute',right:0,top:'50%',transform:'translateY(-50%)',background:'rgba(255,255,255,0.7)',border:'none',borderRadius:16,padding:8,zIndex:2,cursor:'pointer',fontSize:22,display:images.length>1?'block':'none'}}>›</button>
         {/* Puntos indicadores */}
         {images.length > 1 && (

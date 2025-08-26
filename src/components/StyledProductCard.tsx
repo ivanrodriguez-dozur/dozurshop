@@ -42,7 +42,7 @@ export const StyledProductCard: React.FC<StyledProductCardProps> = ({
       {/* Product Image */}
       <div className="aspect-square relative overflow-hidden">
         <Image
-          src={product.image || '/assets/placeholder.png'}
+          src={product.image_url}
           alt={product.name}
           fill
           className="object-cover group-hover:scale-110 transition-transform duration-500"

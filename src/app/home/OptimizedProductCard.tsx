@@ -5,7 +5,7 @@ import { Product } from "./types";
 
 interface ProductCardProps {
   product: Product;
-  onFavorite: (productId: number) => void;
+  onFavorite: (productId: string) => void;
   onSelect?: () => void;
   onProductClick?: (product: Product) => void;
   onAddToCart?: (product: Product, quantity: number, size: string, color: string) => void;
@@ -85,19 +85,30 @@ const OptimizedProductCard: React.FC<ProductCardProps> = memo(({
         justifyContent: 'center',
         boxShadow: '0 4px 24px 0 rgba(0,0,0,0.18)'
       }}>
-        <Image
-          src={product.image}
-          alt={product.name}
-          width={220}
-          height={220}
-          style={{
-            objectFit: "cover",
-            width: '100%',
-            height: '100%',
-            borderRadius: 32
-          }}
-          loading="lazy"
-        />
+        {(() => {
+          const DEFAULT_IMAGE = 'https://placehold.co/220x220?text=Sin+Imagen';
+          const { buildSupabasePublicUrl } = require('../../lib/resolveImageUrl');
+          const raw = product.image_url && product.image_url.trim() !== '' ? product.image_url : '';
+          const imageUrl = raw ? buildSupabasePublicUrl(raw) : DEFAULT_IMAGE;
+          return (
+            <Image
+              src={imageUrl}
+              alt={product.name}
+              width={220}
+              height={220}
+              style={{
+                objectFit: 'cover',
+                width: '100%',
+                height: 'auto',
+                maxWidth: '100%',
+                borderRadius: 32,
+              }}
+              loading="lazy"
+              onError={(e: any) => { e.currentTarget.src = DEFAULT_IMAGE; }}
+              unoptimized={true}
+            />
+          );
+        })()}
       </div>
       <div style={{
         position: "absolute",
