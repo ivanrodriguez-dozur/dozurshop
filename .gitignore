@@ -17,3 +17,5 @@ Thumbs.db
 *.sqlite3
 *.tgz
 node_modules
+.next/
+public/booms/

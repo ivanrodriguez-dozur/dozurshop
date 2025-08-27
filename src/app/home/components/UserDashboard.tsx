@@ -29,6 +29,32 @@ function getLevel(xp: number) {
   }
   return { level, nextLevelXp: next, currentLevelXp: next / 2 };
 }
+
+// ...existing code...
+
+// --- COMPONENTE PRINCIPAL ---
+function UserDashboard(props: any) {
+  // Aquí van tus hooks y lógica de estado
+  const [showLogin, setShowLogin] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [isLogged, setIsLogged] = useState(false);
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [showInfo, setShowInfo] = useState<string | null>(null);
+  const [coins, setCoins] = useState(0);
+  const [booms, setBooms] = useState(0);
+  const [time, setTime] = useState(0);
+  const [level, setLevel] = useState(1);
+  const [xp, setXp] = useState(0);
+  const [challengeIdx, setChallengeIdx] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [currentLevelXp, setCurrentLevelXp] = useState(0);
+  const [nextLevelXp, setNextLevelXp] = useState(500);
+
+  // ...aquí iría la lógica de useEffect y demás hooks...
+
+  return (
+    <>
       {showLogin && (
         <>
           <div
@@ -194,3 +220,5 @@ function SectionCard({ icon, title, value, info, showInfo, onInfo, children }: a
 // 4. Puedes mejorar el carrusel con librerías como keen-slider, swiper, etc.
 // 5. Agrega animaciones con Tailwind, Framer Motion o CSS.
 // 6. Usa el componente en tu login o dashboard: <UserDashboard userData={user} />
+
+export default UserDashboard;
