@@ -33,7 +33,16 @@ function getLevel(xp: number) {
 // ...existing code...
 
 // --- COMPONENTE PRINCIPAL ---
-function UserDashboard(props: any) {
+interface UserDashboardProps {
+  userData?: {
+    avatar_url?: string;
+    nickname?: string;
+    xp?: number;
+    // Agrega más campos según tu modelo de usuario
+  };
+}
+
+function UserDashboard(props: UserDashboardProps) {
   // Aquí van tus hooks y lógica de estado
   const [showLogin, setShowLogin] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
@@ -185,7 +194,17 @@ function UserDashboard(props: any) {
 }
 
 // --- COMPONENTE DE SECCIÓN/CARD DEL CARRUSEL ---
-function SectionCard({ icon, title, value, info, showInfo, onInfo, children }: any) {
+interface SectionCardProps {
+  icon: React.ReactNode;
+  title: string;
+  value: React.ReactNode;
+  info: string;
+  showInfo: boolean;
+  onInfo: () => void;
+  children?: React.ReactNode;
+}
+
+function SectionCard({ icon, title, value, info, showInfo, onInfo, children }: SectionCardProps) {
   return (
     <div className="min-w-[160px] max-w-[180px] bg-white rounded-2xl shadow-md p-4 flex flex-col items-center relative snap-center">
       <div className="absolute top-2 right-2">

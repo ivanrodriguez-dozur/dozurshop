@@ -47,7 +47,7 @@ export default function Favoritos() {
                   <div key={product.id} style={{ background: '#f5f5f5', borderRadius: 18, boxShadow: '0 2px 12px #0001', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 18, position: 'relative', height: 320, minWidth: 320, maxWidth: 420, cursor: 'pointer', overflow: 'hidden' }} onClick={() => router.push(`/product/${product.slug}`)}>
                     {(() => {
                       const DEFAULT = 'https://placehold.co/520x300?text=Sin+Imagen';
-                      const { buildSupabasePublicUrl } = require('../../../lib/resolveImageUrl');
+import { buildSupabasePublicUrl } from '../../../lib/resolveImageUrl';
                       const src = product.image_url && product.image_url.trim() !== '' ? buildSupabasePublicUrl(product.image_url) : DEFAULT;
                       return (
                         <Image
@@ -56,7 +56,7 @@ export default function Favoritos() {
                           width={520}
                           height={300}
                           style={{ objectFit: 'cover', borderRadius: 14, width: '100%', height: 260, marginBottom: 0 }}
-                          onError={(e: any) => { e.currentTarget.src = DEFAULT; }}
+                          onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => { e.currentTarget.src = DEFAULT; }}
                           unoptimized={true}
                         />
                       );

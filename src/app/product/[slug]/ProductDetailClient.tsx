@@ -4,12 +4,14 @@ import ProductDetail from '../../home/ProductDetail';
 import { useFavoritesStore } from '../../../store/favorites';
 import { useCartStore } from '../../../store/cart';
 
-export default function ProductDetailClient({ product }: { product: any }) {
+import { Product } from '../../../home/types';
+
+export default function ProductDetailClient({ product }: { product: Product }) {
   const { favorites, toggleFavorite } = useFavoritesStore();
   const { add } = useCartStore();
 
   // Handler para agregar al carrito
-  const handleAddToCart = ({ product: prod, quantity, size, color }: { product: any; quantity: number; size: string; color: string }) => {
+  const handleAddToCart = ({ product: prod, quantity, size, color }: { product: Product; quantity: number; size: string; color: string }) => {
     add({
       id: prod.id,
       name: prod.name,
@@ -23,7 +25,7 @@ export default function ProductDetailClient({ product }: { product: any }) {
   // Handler para favoritos
   const handleFavorite = () => toggleFavorite(product);
 
-  const isFavorite = favorites.some((f: any) => f.id === product.id);
+  const isFavorite = favorites.some((f: Product) => f.id === product.id);
 
   return (
     <ProductDetail

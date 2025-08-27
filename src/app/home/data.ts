@@ -1,2 +1,3 @@
 // src/app/home/data.ts
-export const mockProducts: any[] = [];
+import { Product } from './types';
+export const mockProducts: Product[] = [];

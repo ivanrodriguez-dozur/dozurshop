@@ -4,7 +4,7 @@ import SizeSelectorShoes from './SizeSelectorShoes';
 import SizeSelectorClothes from './SizeSelectorClothes';
 import AddToCartBar from './AddToCartBar';
 import Image from 'next/image';
-const { buildSupabasePublicUrl } = require('../lib/resolveImageUrl');
+import { buildSupabasePublicUrl } from '../lib/resolveImageUrl';
 
 import { Product } from '../app/home/types';
 
@@ -20,7 +20,7 @@ export default function ProductDetail({ product }: { product: Product }) {
           width={320}
           height={320}
           className="rounded-xl mx-auto bg-white"
-          onError={(e: any) => { e.currentTarget.src = 'https://placehold.co/320x320?text=Sin+Imagen'; }}
+          onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => { e.currentTarget.src = 'https://placehold.co/320x320?text=Sin+Imagen'; }}
           unoptimized={true}
         />
         <div className="flex items-center justify-between mt-4">

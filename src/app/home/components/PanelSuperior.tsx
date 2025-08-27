@@ -225,7 +225,7 @@ function PanelSuperior(props) {
 													router.push(`/product/${p.slug ?? p.id}`);
 												}}
 											>
-												<img src={buildSupabasePublicUrl(p.image_url)} alt={p.name} style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover' }} />
+												<Image src={buildSupabasePublicUrl(p.image_url)} alt={p.name} width={32} height={32} style={{ borderRadius: 8, objectFit: 'cover' }} />
 												<span>{p.name}</span>
 											</button>
 										))
@@ -239,7 +239,7 @@ function PanelSuperior(props) {
 									<div className="flex gap-3 overflow-x-auto pb-2">
 										{recomendados.map((p) => (
 											<div key={p.id} className="flex-shrink-0 cursor-pointer" style={{ width: 90 }} onClick={() => { setShowSearch(false); router.push(`/product/${p.slug ?? p.id}`); }}>
-												<img src={buildSupabasePublicUrl(p.image_url)} alt={p.name} style={{ width: 80, height: 80, borderRadius: 12, objectFit: 'cover', margin: '0 auto' }} />
+												<Image src={buildSupabasePublicUrl(p.image_url)} alt={p.name} width={80} height={80} style={{ borderRadius: 12, objectFit: 'cover', margin: '0 auto' }} />
 												<div className="text-xs text-center mt-1 text-gray-800">{p.name}</div>
 											</div>
 										))}
@@ -251,7 +251,7 @@ function PanelSuperior(props) {
 									<div className="flex gap-3 overflow-x-auto pb-2">
 										{popularProducts.map((p) => (
 											<div key={p.id} className="flex-shrink-0 cursor-pointer" style={{ width: 90 }} onClick={() => { setShowSearch(false); router.push(`/product/${p.slug ?? p.id}`); }}>
-												<img src={buildSupabasePublicUrl(p.image_url)} alt={p.name} style={{ width: 80, height: 80, borderRadius: 12, objectFit: 'cover', margin: '0 auto' }} />
+												<Image src={buildSupabasePublicUrl(p.image_url)} alt={p.name} width={80} height={80} style={{ borderRadius: 12, objectFit: 'cover', margin: '0 auto' }} />
 												<div className="text-xs text-center mt-1 text-gray-800">{p.name}</div>
 											</div>
 										))}

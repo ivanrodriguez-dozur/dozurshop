@@ -20,7 +20,7 @@ export default function AuthForm() {
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<unknown>(null);
   const router = useRouter();
 
   // Detectar usuario autenticado al cargar
@@ -94,7 +94,7 @@ export default function AuthForm() {
     const avatar = user.user_metadata?.avatar_url || "/assets/avatar.png";
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
-        <img src={avatar} alt="Avatar" className="w-20 h-20 rounded-full mb-4 border-4 border-yellow-400" />
+  <Image src={avatar} alt="Avatar" width={80} height={80} className="rounded-full mb-4 border-4 border-yellow-400" />
         <h2 className="text-2xl font-bold mb-2">¡Bienvenido, {user.email}!</h2>
         <p className="mb-4">Ya has iniciado sesión.</p>
         <button
@@ -117,7 +117,6 @@ export default function AuthForm() {
 
         <div className="mb-3">
           <label htmlFor="email" className="block text-sm mb-1">Correo</label>
-          try {
             let result;
             if (mode === "login") {
               result = await supabase.auth.signInWithPassword({ email, password });

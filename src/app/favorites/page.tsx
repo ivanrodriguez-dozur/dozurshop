@@ -210,10 +210,10 @@ export default function Favoritos() {
                   aria-label={`Ver detalles de ${product.name}`}
                   onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') goToProduct(product.slug); }}
                   onTouchStart={e => {
-                    (e.currentTarget as any)._touchStartX = e.touches[0].clientX;
+                    (e.currentTarget as HTMLElement & { _touchStartX?: number })._touchStartX = e.touches[0].clientX;
                   }}
                   onTouchEnd={e => {
-                    const startX = (e.currentTarget as any)._touchStartX;
+                    const startX = (e.currentTarget as HTMLElement & { _touchStartX?: number })._touchStartX;
                     const endX = e.changedTouches[0].clientX;
                     if (startX - endX > 60) { // swipe left
                       goToProduct(product.slug);
@@ -221,10 +221,10 @@ export default function Favoritos() {
                     }
                   }}
                   onMouseDown={e => {
-                    (e.currentTarget as any)._mouseStartX = e.clientX;
+                    (e.currentTarget as HTMLElement & { _mouseStartX?: number })._mouseStartX = e.clientX;
                   }}
                   onMouseUp={e => {
-                    const startX = (e.currentTarget as any)._mouseStartX;
+                    const startX = (e.currentTarget as HTMLElement & { _mouseStartX?: number })._mouseStartX;
                     const endX = e.clientX;
                     if (startX - endX > 60) { // swipe left with mouse
                       goToProduct(product.slug);

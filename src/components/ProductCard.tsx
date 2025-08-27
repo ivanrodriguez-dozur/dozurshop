@@ -1,4 +1,5 @@
 "use client";
+import { buildSupabasePublicUrl } from '../lib/resolveImageUrl';
 import Image from "next/image";
 import { Product } from "../app/home/types";
 
@@ -17,7 +18,6 @@ export default function ProductCard({
 }: ProductCardProps) {
   // Fallback por si el producto no tiene image_url
   const DEFAULT_IMAGE = "https://placehold.co/220x220?text=Sin+Imagen";
-  const { buildSupabasePublicUrl } = require('../lib/resolveImageUrl');
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -70,7 +70,7 @@ export default function ProductCard({
             height: 220,
             display: "block",
           }}
-          onError={(e: any) => {
+          onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
             e.currentTarget.src = DEFAULT_IMAGE;
           }}
           unoptimized={true}

@@ -8,7 +8,7 @@ interface ProductGridProps {
 	onProductClick: (id: string) => void;
 	onFavorite: (product: Product) => void;
 	title?: string;
-	ProductCardComponent?: React.ComponentType<any>;
+	ProductCardComponent?: React.ComponentType<unknown>;
 }
 
 const ProductGrid: React.FC<ProductGridProps> = ({ products, favorites, onProductClick, onFavorite, title, ProductCardComponent }) => {

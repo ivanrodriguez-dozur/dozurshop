@@ -87,7 +87,7 @@ const OptimizedProductCard: React.FC<ProductCardProps> = memo(({
       }}>
         {(() => {
           const DEFAULT_IMAGE = 'https://placehold.co/220x220?text=Sin+Imagen';
-          const { buildSupabasePublicUrl } = require('../../lib/resolveImageUrl');
+import { buildSupabasePublicUrl } from '../../lib/resolveImageUrl';
           const raw = product.image_url && product.image_url.trim() !== '' ? product.image_url : '';
           const imageUrl = raw ? buildSupabasePublicUrl(raw) : DEFAULT_IMAGE;
           return (
@@ -104,7 +104,7 @@ const OptimizedProductCard: React.FC<ProductCardProps> = memo(({
                 borderRadius: 32,
               }}
               loading="lazy"
-              onError={(e: any) => { e.currentTarget.src = DEFAULT_IMAGE; }}
+              onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => { e.currentTarget.src = DEFAULT_IMAGE; }}
               unoptimized={true}
             />
           );
