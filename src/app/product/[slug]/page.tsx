@@ -3,9 +3,8 @@ import { supabase } from "../../../../lib/supabaseClient";
 import ProductDetailClient from "./ProductDetailClient";
 
 
-export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
+export default async function ProductDetailPage({ params }) {
   const { slug } = params;
-
   const { data: product, error } = await supabase
     .from('products')
     .select('*')
