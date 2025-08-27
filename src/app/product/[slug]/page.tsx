@@ -2,8 +2,9 @@ import { notFound } from "next/navigation";
 import { supabase } from "../../../../lib/supabaseClient";
 import ProductDetailClient from "./ProductDetailClient";
 
+
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
-  const { slug } = await params as { slug: string };
+  const { slug } = params;
 
   const { data: product, error } = await supabase
     .from('products')
