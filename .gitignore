@@ -1,1 +1,19 @@
+# Node.js/Next.js
+node_modules/
+.next/
+out/
+.env*
+.DS_Store
+*.log
+lib/
+# VSCode/IDE
+.vscode/
+.idea/
+# Sistema
+Thumbs.db
+*.swp
+# Otros
+*.sqlite
+*.sqlite3
+*.tgz
 node_modules

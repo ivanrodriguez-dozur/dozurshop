@@ -1,0 +1,172 @@
+// Lista de videos para el feed tipo reels/booms
+export interface BoomVideo {
+  id: string;
+  title: string;
+  video: string; // ruta relativa en public/booms
+  cover: string; // imagen de portada
+  user: string;
+  likes: number;
+}
+
+export const boomVideos: BoomVideo[] = [
+  {
+    id: "1",
+    title: "UNA FINAL ADELANTADA",
+    video: "/booms/UNA FINAL ADELANTADA .mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "2",
+    title: "UN PARTIDO DE TOMA Y DAME",
+    video: "/booms/UN PARTIDO DE TOMA Y DAME .mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "3",
+    title: "ultimos minutos de infarto",
+    video: "/booms/ultimos minutos de infarto .mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "4",
+    title: "UFF MUCHO PALAZO DE PIZZERO",
+    video: "/booms/UFF MUCHO PALAZO DE PIZZERO.mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "5",
+    title: "UFF MUCHO GOLOTEE",
+    video: "/booms/UFF MUCHO GOLOTEE.mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "6",
+    title: "uff casi lo cuelga",
+    video: "/booms/uff casi lo cuelga .mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "7",
+    title: "sarita es de otro planeta. mejores momentos",
+    video: "/booms/sarita es de otro planeta. mejores momentos .mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "8",
+    title: "SARITA ES DE OTRO PLANETA PARTE 1",
+    video: "/booms/SARITA ES DE OTRO PLANETA PARTE 1.mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "9",
+    title: "SARITA ES DE OTRO PLANETA 2 PARTE",
+    video: "/booms/SARITA ES DE OTRO PLANETA 2 PARTE.mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "10",
+    title: "QUE ATAJADOTA DE GATO",
+    video: "/booms/QUE ATAJADOTA DE GATO .mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "11",
+    title: "PORTERO ES LO QUE TENEMOS",
+    video: "/booms/PORTERO ES LO QUE TENEMOS.mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "12",
+    title: "MUCHA PIOLA DE PIZZERO",
+    video: "/booms/MUCHA PIOLA DE PIZZERO .mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "13",
+    title: "LOS MEJORES GOLES",
+    video: "/booms/LOS MEJORES GOLES.mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "14",
+    title: "LOS DEJO CON LOS MEJORES MOMENTOS",
+    video: "/booms/LOS DEJO CON LOS MEJORES MOMENTOS .mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "15",
+    title: "las que tengamos ahi cobremosla ahi muchachos",
+    video: "/booms/las que tengamos ahi cobremosla ahi muchachos .mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "16",
+    title: "la definicion de cucu uff",
+    video: "/booms/la definicion de cucu uff.mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "17",
+    title: "ganamos 2 -1 partido muy reñido",
+    video: "/booms/ganamos 2 -1 partido muy reñido .mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "18",
+    title: "FALTA JUEZ, NO VE COMO LA COGE",
+    video: "/booms/FALTA JUEZ, NO VE COMO LA COGE.mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "19",
+    title: "esa fue la final adelantada",
+    video: "/booms/esa fue la final adelantada .mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  },
+  {
+    id: "20",
+    title: "era un golazoo",
+    video: "/booms/era un golazoo.mp4",
+    cover: "/booms/generic-cover.jpg",
+    user: "@usuario",
+    likes: 100,
+  }
+];
