@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { fetchProducts } from '../../../lib/products';
 
 export async function GET() {

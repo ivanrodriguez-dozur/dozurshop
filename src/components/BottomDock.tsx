@@ -1,15 +1,18 @@
 "use client";
 
-import { Home, Heart, ShoppingCart, Flame } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Home, Heart, ShoppingCart, Flame, User } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
+
 import { useCartStore } from '../store/cart';
 import { useFavoritesStore } from '../store/favorites';
 
 const items = [
   { icon: Home, label: 'Home', route: '/home' },
   { icon: Heart, label: 'Favoritos', route: '/favorites' },
+  { icon: Flame, label: 'Booms', route: '/booms' },
   { icon: ShoppingCart, label: 'Carrito', route: '/carrito' },
-  { icon: Flame, label: 'Boom', route: '/profile' },
+  { icon: User, label: 'Perfil', route: '/profile' },
 ];
 
 export default function BottomDock() {
@@ -17,6 +20,11 @@ export default function BottomDock() {
   const pathname = usePathname();
   const { items: cartItems } = useCartStore();
   const { favorites } = useFavoritesStore();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  // Evitamos renderizar contenido dependiente del cliente durante SSR
+  if (!mounted) return null;
   const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
   const favCount = favorites.length;
   return (
@@ -40,14 +48,61 @@ export default function BottomDock() {
             aria-label={label}
             onClick={() => router.push(route)}
             className={`flex items-center justify-center focus:outline-neon transition-colors duration-200 rounded-full ${pathname === route ? 'bg-neon' : ''}`}
-            style={{ width: 48, height: 48, margin: '0 2px', background: pathname === route ? '#b5ff00' : 'transparent', cursor: 'pointer', position: 'relative' }}
+            style={{
+              width: 48,
+              height: 48,
+              margin: '0 2px',
+              background: pathname === route ? '#b5ff00' : 'transparent',
+              cursor: 'pointer',
+              position: 'relative',
+            }}
           >
             <Icon className="w-7 h-7" color={pathname === route ? '#181818' : '#fff'} />
             {label === 'Carrito' && cartCount > 0 && (
-              <span style={{ position: 'absolute', top: 7, right: 7, background: '#ff3b3b', color: '#fff', fontWeight: 700, fontSize: 13, borderRadius: '50%', minWidth: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px #ff3b3b55', padding: '0 6px' }}>{cartCount}</span>
+              <span
+                style={{
+                  position: 'absolute',
+                  top: 7,
+                  right: 7,
+                  background: '#ff3b3b',
+                  color: '#fff',
+                  fontWeight: 700,
+                  fontSize: 13,
+                  borderRadius: '50%',
+                  minWidth: 20,
+                  height: 20,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 8px #ff3b3b55',
+                  padding: '0 6px',
+                }}
+              >
+                {cartCount}
+              </span>
             )}
             {label === 'Favoritos' && favCount > 0 && (
-              <span style={{ position: 'absolute', top: 7, right: 7, background: '#ff3b3b', color: '#fff', fontWeight: 700, fontSize: 13, borderRadius: '50%', minWidth: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px #ff3b3b55', padding: '0 6px' }}>{favCount}</span>
+              <span
+                style={{
+                  position: 'absolute',
+                  top: 7,
+                  right: 7,
+                  background: '#ff3b3b',
+                  color: '#fff',
+                  fontWeight: 700,
+                  fontSize: 13,
+                  borderRadius: '50%',
+                  minWidth: 20,
+                  height: 20,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 8px #ff3b3b55',
+                  padding: '0 6px',
+                }}
+              >
+                {favCount}
+              </span>
             )}
           </button>
         ))}

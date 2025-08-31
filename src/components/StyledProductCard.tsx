@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+
 import { Product } from '../app/home/types';
 
 interface StyledProductCardProps {
@@ -53,19 +54,15 @@ export const StyledProductCard: React.FC<StyledProductCardProps> = ({
       {/* Product Info */}
       <div className="p-4 space-y-3">
         <div>
-          <h3 className="text-white font-semibold text-lg leading-tight">
-            {product.name}
-          </h3>
+          <h3 className="text-white font-semibold text-lg leading-tight">{product.name}</h3>
           <p className="text-gray-400 text-sm mt-1">{product.brand}</p>
         </div>
 
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-2xl font-bold text-white">
-              ${product.price}
-            </span>
+            <span className="text-2xl font-bold text-white">${product.price}</span>
           </div>
-          
+
           {product.stock !== undefined && product.stock > 0 && product.stock < 10 && (
             <span className="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-1 rounded-full">
               Low Stock
@@ -82,16 +79,21 @@ export const StyledProductCard: React.FC<StyledProductCardProps> = ({
           >
             {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
           </button>
-          
+
           <button className="px-3 py-2 border border-gray-700 rounded-lg hover:border-neon/50 hover:text-neon transition-all duration-300">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              />
             </svg>
           </button>
         </div>

@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 // Configuración editable del banner
 const bannerConfig = {
   images: [
-    "https://ktpajrnflcqwgaoaywuu.supabase.co/storage/v1/object/public/products/1.jpg",
-    "https://ktpajrnflcqwgaoaywuu.supabase.co/storage/v1/object/public/products/10.jpg",
-    "https://ktpajrnflcqwgaoaywuu.supabase.co/storage/v1/object/public/products/2.jpg",
+    'https://ktpajrnflcqwgaoaywuu.supabase.co/storage/v1/object/public/products/1.jpg',
+    'https://ktpajrnflcqwgaoaywuu.supabase.co/storage/v1/object/public/products/10.jpg',
+    'https://ktpajrnflcqwgaoaywuu.supabase.co/storage/v1/object/public/products/2.jpg',
   ],
-  title: "Bienvenido Micrero! Los Mejores descuentos se van pronto", // Edita este texto a tu gusto
+  title: 'Bienvenido Micrero! Los Mejores descuentos se van pronto', // Edita este texto a tu gusto
   timerSeconds: 24 * 60 * 60, // Tiempo inicial del reloj en segundos (ejemplo: 24 horas)
   bannerHeight: 160, // Alto del banner en px
   bannerRadius: 20, // Border radius del banner en px
@@ -17,10 +17,10 @@ const bannerConfig = {
   bannerPaddingX: 24, // Padding horizontal
   bannerPaddingY: 22, // Padding vertical
   gradients: [
-    "linear-gradient(90deg, #eff307ff 0%, #181818 100%)",
-    "linear-gradient(90deg, #00ff73ff 0%, #181818 100%)",
-    "linear-gradient(90deg, #00ccffff 0%, #181818 100%)",
-    "linear-gradient(90deg, #3c0af0ff 0%, #181818 100%)",
+    'linear-gradient(90deg, #eff307ff 0%, #181818 100%)',
+    'linear-gradient(90deg, #00ff73ff 0%, #181818 100%)',
+    'linear-gradient(90deg, #00ccffff 0%, #181818 100%)',
+    'linear-gradient(90deg, #3c0af0ff 0%, #181818 100%)',
   ],
   // --- Personalización del reloj ---
   // Puedes editar el tamaño del reloj cambiando el padding (espaciado interno) aquí:
@@ -42,7 +42,7 @@ const bannerConfig = {
  */
 export default function BannerPublicitario() {
   // Colores visibles para el reloj
-  const clockColors = ["#fbff00ff", "#00ff9dff", "#2196f3", "#e91e63", "#00e676", "#ffeb3b"];
+  const clockColors = ['#fbff00ff', '#00ff9dff', '#2196f3', '#e91e63', '#00e676', '#ffeb3b'];
   const [clockColorIndex, setClockColorIndex] = useState(0);
 
   // Cambia el color del reloj cada 30 segundos
@@ -82,8 +82,12 @@ export default function BannerPublicitario() {
 
   // Formatea el tiempo en formato hh:mm:ss
   function formatTime(s: number) {
-    const h = Math.floor(s / 3600).toString().padStart(2, '0');
-    const m = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
+    const h = Math.floor(s / 3600)
+      .toString()
+      .padStart(2, '0');
+    const m = Math.floor((s % 3600) / 60)
+      .toString()
+      .padStart(2, '0');
     const sec = (s % 60).toString().padStart(2, '0');
     return `${h}:${m}:${sec}`;
   }

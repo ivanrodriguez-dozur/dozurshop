@@ -1,5 +1,6 @@
-"use client";
+'use client';
 import { useState } from 'react';
+
 import PanelSuperior from '../home/components/PanelSuperior';
 import ProductCard from '../../components/ProductCard';
 import { fetchProducts } from '../../lib/products';
@@ -17,20 +18,27 @@ export default function SearchPage() {
 
   return (
     <main className="min-h-screen pb-20">
-  <PanelSuperior pageTitle="Dozur Shop" />
+      <PanelSuperior pageTitle="Dozur Shop" />
       <div className="p-4">
         <input
           aria-label="Buscar productos"
           className="w-full p-2 rounded-xl border border-gray-700 bg-black text-white focus:outline-neon"
           placeholder="Buscar..."
           value={query}
-          onChange={e => setQuery(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && handleSearch()}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
         />
-        <button className="mt-2 w-full bg-neon text-black rounded-xl py-2 font-bold" onClick={handleSearch}>Buscar</button>
+        <button
+          className="mt-2 w-full bg-neon text-black rounded-xl py-2 font-bold"
+          onClick={handleSearch}
+        >
+          Buscar
+        </button>
       </div>
       <div className="px-4 grid grid-cols-2 gap-4">
-        {results.map((p: Product) => <ProductCard key={p.id} product={p} />)}
+        {results.map((p: Product) => (
+          <ProductCard key={p.id} product={p} />
+        ))}
       </div>
     </main>
   );

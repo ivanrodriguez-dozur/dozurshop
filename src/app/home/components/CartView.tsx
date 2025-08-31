@@ -1,4 +1,5 @@
-import React from "react";
+import React from 'react';
+
 import { Product } from '../types';
 
 interface CartItem {
@@ -18,7 +19,9 @@ export default function CartView({ cart, onUpdateQuantity, onClose }: CartViewPr
   return (
     <div style={{ color: '#b5ff00', padding: 24 }}>
       {cart.length === 0 ? 'Carrito vacío' : 'Carrito con productos'}
-      <button onClick={onClose} style={{ marginLeft: 16 }}>Cerrar</button>
+      <button onClick={onClose} style={{ marginLeft: 16 }}>
+        Cerrar
+      </button>
     </div>
   );
 }

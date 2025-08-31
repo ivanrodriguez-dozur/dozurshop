@@ -19,7 +19,7 @@ module.exports = {
           200: '#D3FF99',
           300: '#BDFF66',
           400: '#A7FF33',
-    plugins: [],
+          plugins: [],
           600: '#9FE600',
           700: '#87CC00',
           800: '#6FB300',
@@ -76,21 +76,22 @@ module.exports = {
         xs: '2px',
       },
       boxShadow: {
-        'neon': '0 0 20px rgba(182, 255, 0, 0.3)',
+        neon: '0 0 20px rgba(182, 255, 0, 0.3)',
         'neon-sm': '0 0 10px rgba(182, 255, 0, 0.3)',
         'neon-lg': '0 0 30px rgba(182, 255, 0, 0.3)',
-        'dark': '0 10px 30px rgba(0, 0, 0, 0.5)',
+        dark: '0 10px 30px rgba(0, 0, 0, 0.5)',
       },
       spacing: {
-        '18': '4.5rem',
-        '88': '22rem',
+        18: '4.5rem',
+        88: '22rem',
       },
       borderRadius: {
         '4xl': '2rem',
       },
       screens: {
-        'xs': '475px',
+        xs: '475px',
       },
     },
   },
   plugins: [],
+};

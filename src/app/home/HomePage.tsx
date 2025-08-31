@@ -1,23 +1,21 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { useShopping } from "./hooks/useShopping";
+import React, { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+
 import { useFavoritesStore } from '../../store/favorites';
+import BannerPublicitario from '../../components/BannerPublicitario';
+import ProductCard from '../../components/ProductCard';
+import { useToast } from '../context/ToastContext';
+
+import { useShopping } from './hooks/useShopping';
 import ProductDetail from './ProductDetail';
 import CartView from './components/CartView';
-import { useProducts } from "./hooks/useProducts";
-import BannerPublicitario from "../../components/BannerPublicitario";
-import PanelSuperior from "./components/PanelSuperior";
-import ProductGrid from "./components/ProductGrid";
-import ProductCard from "../../components/ProductCard";
+import { useProducts } from './hooks/useProducts';
+import PanelSuperior from './components/PanelSuperior';
+import ProductGrid from './components/ProductGrid';
+import { etiquetas, estilosEtiquetas } from './etiquetas';
 
-import { etiquetas, estilosEtiquetas } from "./etiquetas";
-
-
-
-import { useToast } from "../context/ToastContext";
 // import BottomNav from "./BottomNav";
 import { Product } from './types';
 import Modal from './components/Modal';
@@ -27,11 +25,7 @@ export default function HomePage() {
   // Ref para la grilla de productos
   const gridRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
-  const {
-    cart,
-    addToCart,
-    cartCount
-  } = useShopping();
+  const { cart, addToCart, cartCount } = useShopping();
 
   const {
     products,
@@ -39,7 +33,7 @@ export default function HomePage() {
     activeCategory,
     setActiveCategory,
     popularProducts,
-    searchProducts
+    searchProducts,
   } = useProducts();
 
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
@@ -47,40 +41,46 @@ export default function HomePage() {
   const { showToast } = useToast();
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState('');
 
-
-  const handleAddToCart = (item: { product: Product; quantity: number; size: string; color: string }) => {
+  const handleAddToCart = (item: {
+    product: Product;
+    quantity: number;
+    size: string;
+    color: string;
+  }) => {
     addToCart(item.product, item.quantity, item.size, item.color);
-    showToast("Agregado al carrito");
+    showToast('Agregado al carrito');
   };
 
-  const favProducts = useFavoritesStore(state => state.favorites);
-  const toggleFavorite = useFavoritesStore(state => state.toggleFavorite);
+  const favProducts = useFavoritesStore((state) => state.favorites);
+  const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
   // Array de ids para ProductGrid
-  const favoriteIds = favProducts.map(f => f.id);
+  const favoriteIds = favProducts.map((f) => f.id);
   // handleFavorite ahora recibe Product
   const handleFavorite = (product: Product) => {
     toggleFavorite(product);
-    const isFav = favProducts.some(f => f.id === product.id);
-    showToast(isFav ? "Eliminado de favoritos" : "Agregado a favoritos");
+    const isFav = favProducts.some((f) => f.id === product.id);
+    showToast(isFav ? 'Eliminado de favoritos' : 'Agregado a favoritos');
   };
 
-
-  const productToShow: Product | null =
-    selectedProduct
-      ? products.find((p: Product) => p.id === selectedProduct) || null
-      : null;
+  const productToShow: Product | null = selectedProduct
+    ? products.find((p: Product) => p.id === selectedProduct) || null
+    : null;
 
   return (
     <div>
-  <PanelSuperior pageTitle="Dozur Shop" />
+      <PanelSuperior pageTitle="Dozur Shop" />
       <Modal open={showNotifications} onClose={() => setShowNotifications(false)} side>
-        <h2 style={{ color: '#b5ff00', fontWeight: 700, fontSize: 20, marginBottom: 16 }}>Notificaciones</h2>
+        <h2 style={{ color: '#b5ff00', fontWeight: 700, fontSize: 20, marginBottom: 16 }}>
+          Notificaciones
+        </h2>
         <div style={{ color: '#fff', fontSize: 16 }}>No tienes notificaciones nuevas</div>
       </Modal>
       <Modal open={showSearchModal} onClose={() => setShowSearchModal(false)}>
-        <h2 style={{ color: '#b5ff00', fontWeight: 700, fontSize: 20, marginBottom: 16 }}>Buscar productos</h2>
+        <h2 style={{ color: '#b5ff00', fontWeight: 700, fontSize: 20, marginBottom: 16 }}>
+          Buscar productos
+        </h2>
         <input
           type="text"
           value={searchValue}
@@ -106,22 +106,41 @@ export default function HomePage() {
         />
       </Modal>
 
-  <div className="bg-white min-h-screen text-black" style={{ minHeight: '100vh', height: '100vh', overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', padding: 0, margin: 0 }}>
-
+      <div
+        className="bg-white min-h-screen text-black"
+        style={{
+          minHeight: '100vh',
+          height: '100vh',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          WebkitOverflowScrolling: 'touch',
+          padding: 0,
+          margin: 0,
+        }}
+      >
         {activeTab === 'home' && (
           <>
             <BannerPublicitario />
             {/* Etiqueta Populares */}
-            <div style={{ fontWeight: 700, fontSize: 20, margin: '18px 0 8px 8px', color: '#111' }}>Populares</div>
+            <div style={{ fontWeight: 700, fontSize: 20, margin: '18px 0 8px 8px', color: '#111' }}>
+              Populares
+            </div>
             {/* Carrusel de productos populares */}
-            <div style={{ overflowX: 'auto', whiteSpace: 'nowrap', paddingBottom: 12, marginBottom: 18 }}>
+            <div
+              style={{
+                overflowX: 'auto',
+                whiteSpace: 'nowrap',
+                paddingBottom: 12,
+                marginBottom: 18,
+              }}
+            >
               <div style={{ display: 'inline-flex', gap: 16 }}>
-                {popularProducts.map(product => (
+                {popularProducts.map((product) => (
                   <div key={product.id} style={{ minWidth: 220, maxWidth: 240 }}>
                     <ProductCard
                       product={product}
                       onFavorite={handleFavorite}
-                      isFavorite={favProducts.some(f => f.id === product.id)}
+                      isFavorite={favProducts.some((f) => f.id === product.id)}
                       onProductClick={() => router.push(`/product/${product.slug ?? product.id}`)}
                     />
                   </div>
@@ -135,10 +154,7 @@ export default function HomePage() {
               className="w-full overflow-x-auto scrollbar-hide"
               style={{ WebkitOverflowScrolling: 'touch', paddingLeft: 18, marginBottom: 8 }}
             >
-              <div
-                className="flex flex-nowrap py-2"
-                style={{ gap: 24 }}
-              >
+              <div className="flex flex-nowrap py-2" style={{ gap: 24 }}>
                 {etiquetas.map(({ icon, categoria, descripcion }) => {
                   // Solo una categoría puede estar activa a la vez
                   const isActive = activeCategory === categoria;
@@ -159,7 +175,10 @@ export default function HomePage() {
                           // Scroll suave a la grilla de productos
                           setTimeout(() => {
                             if (gridRef.current) {
-                              gridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              gridRef.current.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start',
+                              });
                             }
                           }, 80); // Pequeño delay para UX
                         }
@@ -167,7 +186,9 @@ export default function HomePage() {
                       title={descripcion}
                       style={{ flex: '0 0 auto' }}
                     >
-                      <span className={`${isActive ? estilosEtiquetas.icono.activo : estilosEtiquetas.icono.inactivo} mb-1`}>
+                      <span
+                        className={`${isActive ? estilosEtiquetas.icono.activo : estilosEtiquetas.icono.inactivo} mb-1`}
+                      >
                         {icon && typeof icon === 'function' ? React.createElement(icon) : null}
                       </span>
                     </button>
@@ -197,14 +218,10 @@ export default function HomePage() {
           />
         )}
         {activeTab === 'cart' && (
-          <CartView
-            cart={cart}
-            onUpdateQuantity={() => {}}
-            onClose={() => setActiveTab('home')}
-          />
+          <CartView cart={cart} onUpdateQuantity={() => {}} onClose={() => setActiveTab('home')} />
         )}
       </div>
-  {/* BottomNav eliminado por falta de implementación */}
+      {/* BottomNav eliminado por falta de implementación */}
     </div>
   );
 }

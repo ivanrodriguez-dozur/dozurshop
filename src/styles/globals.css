@@ -1,10 +1,34 @@
 /* Confetti y avatar celebration */
-.animate-confetti { animation: confetti-fall 1.2s linear forwards; }
-@keyframes confetti-fall { 0% { opacity:1; transform:translateY(-40px) scale(1);} 100% { opacity:0; transform:translateY(120vh) scale(1.2);} }
-.animate-grow-disappear { animation: grow-disappear 1.2s cubic-bezier(.7,1.7,.7,1) forwards; }
-@keyframes grow-disappear { 0% { transform:scale(1);} 80% { transform:scale(2.5);} 100% { opacity:0; transform:scale(3);} }
+.animate-confetti {
+  animation: confetti-fall 1.2s linear forwards;
+}
+@keyframes confetti-fall {
+  0% {
+    opacity: 1;
+    transform: translateY(-40px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(120vh) scale(1.2);
+  }
+}
+.animate-grow-disappear {
+  animation: grow-disappear 1.2s cubic-bezier(0.7, 1.7, 0.7, 1) forwards;
+}
+@keyframes grow-disappear {
+  0% {
+    transform: scale(1);
+  }
+  80% {
+    transform: scale(2.5);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(3);
+  }
+}
 /* src/styles/globals.css */
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* (Opcional recomendado en v4) activa plugins desde CSS: */
 @plugin "@tailwindcss/forms";
@@ -14,32 +38,32 @@
 /* CSS Custom Properties for consistent theming */
 :root {
   /* Primary Colors */
-  --neon-green: #B6FF00;
-  --neon-green-hover: #9FE600;
-  --neon-green-light: #C8FF33;
-  
+  --neon-green: #b6ff00;
+  --neon-green-hover: #9fe600;
+  --neon-green-light: #c8ff33;
+
   /* Background Colors */
   --bg-primary: #000000;
-  --bg-secondary: #0A0A0A;
-  --bg-tertiary: #1A1A1A;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #1a1a1a;
   --bg-card: #111111;
-  --bg-hover: #1F1F1F;
-  
+  --bg-hover: #1f1f1f;
+
   /* Text Colors */
-  --text-primary: #FFFFFF;
-  --text-secondary: #B3B3B3;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
   --text-muted: #808080;
-  --text-neon: #B6FF00;
-  
+  --text-neon: #b6ff00;
+
   /* Border Colors */
   --border-primary: #262626;
   --border-secondary: #404040;
-  --border-neon: #B6FF00;
-  
+  --border-neon: #b6ff00;
+
   /* Shadow Colors */
   --shadow-neon: rgba(182, 255, 0, 0.3);
   --shadow-dark: rgba(0, 0, 0, 0.5);
-  
+
   /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -47,14 +71,14 @@
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
-  
+
   /* Border Radius */
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
-  
+
   /* Transitions */
   --transition-fast: 150ms ease-in-out;
   --transition-normal: 250ms ease-in-out;
@@ -62,10 +86,10 @@
 }
 
 /* Dark theme overrides */
-[data-theme="dark"] {
+[data-theme='dark'] {
   --bg-primary: #000000;
-  --bg-secondary: #0A0A0A;
-  --bg-tertiary: #1A1A1A;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #1a1a1a;
 }
 
 /* Base styles */
@@ -73,43 +97,44 @@
   * {
     @apply border-border;
   }
-  
+
   html {
     scroll-behavior: smooth;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
-  
+
   body {
-  @apply bg-white text-black antialiased;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    @apply bg-white text-black antialiased;
+    font-family:
+      -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
-  
+
   ::-webkit-scrollbar-track {
     @apply bg-gray-900;
   }
-  
+
   ::-webkit-scrollbar-thumb {
     @apply bg-gray-700 rounded-full;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-gray-600;
   }
-  
+
   /* Selection styles */
   ::selection {
     @apply bg-neon-green text-black;
   }
-  
+
   ::-moz-selection {
     @apply bg-neon-green text-black;
   }
@@ -121,24 +146,24 @@
   .glass {
     @apply backdrop-blur-md bg-white/10 border border-white/20;
   }
-  
+
   .glass-dark {
     @apply backdrop-blur-md bg-black/50 border border-white/10;
   }
-  
+
   /* Neon glow effect */
   .neon-glow {
     box-shadow: 0 0 20px var(--shadow-neon);
   }
-  
+
   .neon-glow-sm {
     box-shadow: 0 0 10px var(--shadow-neon);
   }
-  
+
   .neon-glow-lg {
     box-shadow: 0 0 30px var(--shadow-neon);
   }
-  
+
   /* Button styles */
   .btn-primary {
     @apply bg-neon-green text-black font-bold py-3 px-6 rounded-lg 
@@ -146,29 +171,29 @@
            hover:scale-105 hover:neon-glow-sm
            focus:outline-none focus:ring-2 focus:ring-neon-green focus:ring-offset-2 focus:ring-offset-black;
   }
-  
+
   .btn-secondary {
     @apply bg-gray-800 text-white font-bold py-3 px-6 rounded-lg 
            hover:bg-gray-700 transition-all duration-300
            focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-black;
   }
-  
+
   .btn-ghost {
     @apply text-white hover:text-neon-green transition-colors duration-300
            focus:outline-none focus:ring-2 focus:ring-neon-green focus:ring-offset-2 focus:ring-offset-black;
   }
-  
+
   /* Card styles */
   .card {
     @apply bg-gray-900 border border-gray-800 rounded-xl p-6
            hover:border-gray-700 transition-all duration-300
            hover:shadow-lg hover:shadow-black/50;
   }
-  
+
   .card-hover {
     @apply transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-black/70;
   }
-  
+
   /* Input styles */
   .input {
     @apply bg-gray-900 border border-gray-700 rounded-lg px-4 py-3
@@ -176,22 +201,22 @@
            focus:outline-none focus:ring-2 focus:ring-neon-green focus:border-transparent
            transition-all duration-300;
   }
-  
+
   /* Loading skeleton */
   .skeleton {
     @apply bg-gray-800 animate-pulse rounded-lg;
   }
-  
+
   /* Gradient text */
   .gradient-text {
     @apply bg-gradient-to-r from-neon-green to-green-400 bg-clip-text text-transparent;
   }
-  
+
   /* Hover effects */
   .hover-lift {
     @apply transition-transform duration-300 hover:-translate-y-1;
   }
-  
+
   .hover-glow {
     @apply transition-all duration-300 hover:shadow-lg hover:shadow-neon-green/20;
   }
@@ -203,30 +228,30 @@
   .text-balance {
     text-wrap: balance;
   }
-  
+
   /* Container utilities */
   .container-safe {
     @apply px-4 sm:px-6 lg:px-8;
   }
-  
+
   /* Animation utilities */
   .animate-fade-in {
     animation: fadeIn 0.5s ease-in-out;
   }
-  
+
   .animate-slide-up {
     animation: slideUp 0.5s ease-out;
   }
-  
+
   .animate-bounce-slow {
     animation: bounce 2s infinite;
   }
-  
+
   /* Responsive utilities */
   .responsive-padding {
     @apply p-4 sm:p-6 lg:p-8;
   }
-  
+
   .responsive-margin {
     @apply m-4 sm:m-6 lg:m-8;
   }
@@ -254,11 +279,16 @@
 }
 
 @keyframes bounce {
-  0%, 20%, 53%, 80%, 100% {
+  0%,
+  20%,
+  53%,
+  80%,
+  100% {
     animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
     transform: translate3d(0, 0, 0);
   }
-  40%, 43% {
+  40%,
+  43% {
     animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
     transform: translate3d(0, -30px, 0);
   }
@@ -303,7 +333,7 @@
   .btn-primary {
     border: 2px solid currentColor;
   }
-  
+
   .card {
     border-width: 2px;
   }

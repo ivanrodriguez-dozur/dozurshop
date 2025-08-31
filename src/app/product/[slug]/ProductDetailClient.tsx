@@ -1,9 +1,9 @@
-"use client";
+'use client';
 import React from 'react';
+
 import ProductDetail from '../../home/ProductDetail';
 import { useFavoritesStore } from '../../../store/favorites';
 import { useCartStore } from '../../../store/cart';
-
 import { Product } from '../../../home/types';
 
 export default function ProductDetailClient({ product }: { product: Product }) {
@@ -11,7 +11,16 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   const { add } = useCartStore();
 
   // Handler para agregar al carrito
-  const handleAddToCart = ({ product: prod, quantity, size, color }: { product: Product; quantity: number; size: string; color: string }) => {
+  const handleAddToCart = ({
+    product: prod,
+    quantity,
+    size,
+  }: {
+    product: Product;
+    quantity: number;
+    size: string;
+    color: string;
+  }) => {
     add({
       id: prod.id,
       name: prod.name,

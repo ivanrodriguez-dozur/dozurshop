@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface ModalProps {
   open: boolean;
@@ -10,18 +10,21 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ open, onClose, children, side }) => {
   if (!open) return null;
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100vw',
-      height: '100vh',
-      background: 'rgba(0,0,0,0.35)',
-      zIndex: 1000,
-      display: 'flex',
-      alignItems: side ? 'stretch' : 'center',
-      justifyContent: side ? 'flex-end' : 'center',
-    }} onClick={onClose}>
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'rgba(0,0,0,0.35)',
+        zIndex: 1000,
+        display: 'flex',
+        alignItems: side ? 'stretch' : 'center',
+        justifyContent: side ? 'flex-end' : 'center',
+      }}
+      onClick={onClose}
+    >
       <div
         style={{
           background: '#181818',
@@ -35,9 +38,23 @@ const Modal: React.FC<ModalProps> = ({ open, onClose, children, side }) => {
           position: 'relative',
           right: side ? 0 : undefined,
         }}
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
-        <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 16, background: 'none', border: 'none', color: '#b5ff00', fontSize: 22, cursor: 'pointer' }}>✕</button>
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute',
+            top: 12,
+            right: 16,
+            background: 'none',
+            border: 'none',
+            color: '#b5ff00',
+            fontSize: 22,
+            cursor: 'pointer',
+          }}
+        >
+          ✕
+        </button>
         {children}
       </div>
     </div>

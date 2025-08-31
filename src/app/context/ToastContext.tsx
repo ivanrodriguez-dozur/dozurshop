@@ -1,13 +1,19 @@
-
-"use client";
-import React, { createContext, useContext, useState, ReactNode, useCallback, useRef, useEffect } from 'react';
+'use client';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useCallback,
+  useRef,
+  useEffect,
+} from 'react';
 
 interface ToastContextType {
   showToast: (message: string) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
-
 
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const [visible, setVisible] = useState(false);

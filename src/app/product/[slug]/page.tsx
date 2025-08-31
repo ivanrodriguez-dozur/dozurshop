@@ -1,20 +1,38 @@
-import { notFound } from "next/navigation";
-import { supabase } from "../../../../lib/supabaseClient";
-import ProductDetailClient from "./ProductDetailClient";
+import { notFound } from 'next/navigation';
+
+import { supabase } from '../../../../lib/supabaseClient';
+
+import ProductDetailClient from './ProductDetailClient';
+
+// Definir el tipo correcto para los props de la página dinámica
 
 
-export default async function ProductDetailPage({ params }) {
-  const { slug } = params;
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+
+
+export default async function ProductDetailPage({ params }: PageProps) {
+  const { slug } = await params;
   const { data: product, error } = await supabase
     .from('products')
     .select('*')
     .eq('slug', slug)
     .single();
 
-  if (error || !product) return notFound();
+  if (error || !product) {
+    notFound();
+    return null;
+  }
 
+  return <ProductDetail product={product} />;
+}
+
+function ProductDetail({ product }: { product: any }) {
   return <ProductDetailClient product={product} />;
 }
+
+
 
 // Descripción para futuros cambios:
 // - Este archivo es la página de detalle de producto ("Product Detail")

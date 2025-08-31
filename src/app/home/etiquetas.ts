@@ -2,8 +2,9 @@
 // Descripción: Lista de etiquetas/categorías para el home, con key, icono y descripción editable.
 // Puedes modificar este archivo para cambiar las categorías que aparecen en el home.
 
-import { ReactNode } from "react";
-import { suggestedIcons } from "../../components/suggestedIcons";
+import { ReactNode } from 'react';
+
+import { suggestedIcons } from '../../components/suggestedIcons';
 
 // Puedes cambiar el nombre, icono o descripción de cada categoría aquí.
 
@@ -33,7 +34,7 @@ export const estilosEtiquetas = {
   icono: {
     activo: 'text-4xl', // Tamaño del icono cuando está seleccionada
     inactivo: 'text-2xl', // Tamaño del icono cuando NO está seleccionada
-  }
+  },
 };
 export interface EtiquetaCategoria {
   key: string; // Nombre visible de la categoría
@@ -49,39 +50,39 @@ export interface EtiquetaCategoria {
 // =============================
 export const etiquetas: EtiquetaCategoria[] = [
   {
-    key: "ver todo",
-    icon: suggestedIcons.find(i => i.key === "ver todo")?.icon,
-    descripcion: "Muestra todos los productos sin filtrar.",
-    categoria: "all"
+    key: 'ver todo',
+    icon: suggestedIcons.find((i) => i.key === 'ver todo')?.icon,
+    descripcion: 'Muestra todos los productos sin filtrar.',
+    categoria: 'all',
   },
   {
-    key: "zapatillas",
-    icon: suggestedIcons.find(i => i.key === "zapatillas")?.icon,
-    descripcion: "Calzado deportivo y casual.",
-    categoria: "calzado"
+    key: 'zapatillas',
+    icon: suggestedIcons.find((i) => i.key === 'zapatillas')?.icon,
+    descripcion: 'Calzado deportivo y casual.',
+    categoria: 'calzado',
   },
   {
-    key: "camisas",
-    icon: suggestedIcons.find(i => i.key === "camisas")?.icon,
-    descripcion: "Camisas, camisetas y polos.",
-    categoria: "ropa"
+    key: 'camisas',
+    icon: suggestedIcons.find((i) => i.key === 'camisas')?.icon,
+    descripcion: 'Camisas, camisetas y polos.',
+    categoria: 'ropa',
   },
   {
-    key: "pantalonetas",
-    icon: suggestedIcons.find(i => i.key === "pantalonetas")?.icon,
-    descripcion: "Pantalonetas deportivas y shorts.",
-    categoria: "pantaloneta"
+    key: 'pantalonetas',
+    icon: suggestedIcons.find((i) => i.key === 'pantalonetas')?.icon,
+    descripcion: 'Pantalonetas deportivas y shorts.',
+    categoria: 'pantaloneta',
   },
   {
-    key: "medias",
-    icon: suggestedIcons.find(i => i.key === "medias")?.icon,
-    descripcion: "Medias y calcetines.",
-    categoria: "medias"
+    key: 'medias',
+    icon: suggestedIcons.find((i) => i.key === 'medias')?.icon,
+    descripcion: 'Medias y calcetines.',
+    categoria: 'medias',
   },
   {
-    key: "accesorios",
-    icon: suggestedIcons.find(i => i.key === "accesorios")?.icon,
-    descripcion: "Accesorios varios: gorras, mochilas, etc.",
-    categoria: "accesorios"
-  }
+    key: 'accesorios',
+    icon: suggestedIcons.find((i) => i.key === 'accesorios')?.icon,
+    descripcion: 'Accesorios varios: gorras, mochilas, etc.',
+    categoria: 'accesorios',
+  },
 ];

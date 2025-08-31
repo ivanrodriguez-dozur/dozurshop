@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { fetchProduct } from '../../../../lib/products';
 
 export async function GET(_req, { params }) {

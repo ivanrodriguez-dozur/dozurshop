@@ -1,18 +1,13 @@
-
 // Página de Favoritos mejorada con carrusel y grilla 2x2
-"use client";
+'use client';
 
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
-import { useFavoritesStore } from "../../store/favorites";
-import { useCartStore } from "../../store/cart";
-import { useContext } from "react";
-import { useToast } from "../context/ToastContext";
-import ProductCard from "../../components/ProductCard";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useRef, useState, useEffect } from "react";
-
-
+import ProductCard from '../../components/ProductCard';
+import { useCartStore } from '../../store/cart';
+import { useFavoritesStore } from '../../store/favorites';
+import { useToast } from '../context/ToastContext';
 
 export default function Favoritos() {
   const [scrolled, setScrolled] = useState(false);
@@ -57,16 +52,16 @@ export default function Favoritos() {
 
   // Colores de fondo para las tarjetas
   const bgColors = [
-    "#ffe0e6",
-    "#e0f7fa",
-    "#fff9c4",
-    "#e1bee7",
-    "#c8e6c9",
-    "#f8bbd0",
-    "#d7ccc8",
-    "#b3e5fc",
-    "#f0f4c3",
-    "#d1c4e9",
+    '#ffe0e6',
+    '#e0f7fa',
+    '#fff9c4',
+    '#e1bee7',
+    '#c8e6c9',
+    '#f8bbd0',
+    '#d7ccc8',
+    '#b3e5fc',
+    '#f0f4c3',
+    '#d1c4e9',
   ];
 
   // --- TikTok-like snap scroll ---
@@ -181,7 +176,9 @@ export default function Favoritos() {
         }}
       >
         {reversedFavorites.length === 0 ? (
-          <div style={{ fontSize: 22, color: '#888', textAlign: 'center' }}>No tienes productos favoritos.</div>
+          <div style={{ fontSize: 22, color: '#888', textAlign: 'center' }}>
+            No tienes productos favoritos.
+          </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 32, alignItems: 'center' }}>
             {reversedFavorites.map((product, idx) => (
@@ -204,29 +201,45 @@ export default function Favoritos() {
                 }}
               >
                 <div
-                  style={{ width: 420, height: 420, display: 'flex', alignItems: 'center', justifyContent: 'center', touchAction: 'pan-y', userSelect: 'none' }}
+                  style={{
+                    width: 420,
+                    height: 420,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    touchAction: 'pan-y',
+                    userSelect: 'none',
+                  }}
                   tabIndex={0}
                   role="button"
                   aria-label={`Ver detalles de ${product.name}`}
-                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') goToProduct(product.slug); }}
-                  onTouchStart={e => {
-                    (e.currentTarget as HTMLElement & { _touchStartX?: number })._touchStartX = e.touches[0].clientX;
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') goToProduct(product.slug);
                   }}
-                  onTouchEnd={e => {
-                    const startX = (e.currentTarget as HTMLElement & { _touchStartX?: number })._touchStartX;
+                  onTouchStart={(e) => {
+                    (e.currentTarget as HTMLElement & { _touchStartX?: number })._touchStartX =
+                      e.touches[0].clientX;
+                  }}
+                  onTouchEnd={(e) => {
+                    const startX = (e.currentTarget as HTMLElement & { _touchStartX?: number })
+                      ._touchStartX;
                     const endX = e.changedTouches[0].clientX;
-                    if (startX - endX > 60) { // swipe left
+                    if (startX - endX > 60) {
+                      // swipe left
                       goToProduct(product.slug);
                       hideSwipeInfo();
                     }
                   }}
-                  onMouseDown={e => {
-                    (e.currentTarget as HTMLElement & { _mouseStartX?: number })._mouseStartX = e.clientX;
+                  onMouseDown={(e) => {
+                    (e.currentTarget as HTMLElement & { _mouseStartX?: number })._mouseStartX =
+                      e.clientX;
                   }}
-                  onMouseUp={e => {
-                    const startX = (e.currentTarget as HTMLElement & { _mouseStartX?: number })._mouseStartX;
+                  onMouseUp={(e) => {
+                    const startX = (e.currentTarget as HTMLElement & { _mouseStartX?: number })
+                      ._mouseStartX;
                     const endX = e.clientX;
-                    if (startX - endX > 60) { // swipe left with mouse
+                    if (startX - endX > 60) {
+                      // swipe left with mouse
                       goToProduct(product.slug);
                       hideSwipeInfo();
                     }

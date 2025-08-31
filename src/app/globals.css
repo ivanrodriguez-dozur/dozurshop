@@ -1,10 +1,10 @@
 /* Oculta la barra de scroll en navegadores modernos */
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari, Opera */
+  display: none; /* Chrome, Safari, Opera */
 }
 /* Margen responsivo para el banner promocional */
 .promo-banner-responsive {
@@ -21,7 +21,8 @@
   }
 }
 /* Ocultar scrollbars en todos los navegadores */
-html, body {
+html,
+body {
   width: 100%;
   max-width: 100%;
   overflow-x: hidden !important;
@@ -45,7 +46,9 @@ html {
 }
 /* Oculta el botón de eliminar del carrito en móvil, visible solo en PC/tablet */
 @media (max-width: 767px) {
-  .cart-delete-btn { display: none !important; }
+  .cart-delete-btn {
+    display: none !important;
+  }
 }
 @media (min-width: 768px) {
   .cart-delete-btn {
@@ -61,7 +64,7 @@ html {
     transition: background 0.2s;
   }
 }
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: transparent; /* Cambiando el fondo global a transparente */
@@ -74,7 +77,6 @@ html {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
-
 
 body {
   background: var(--background);

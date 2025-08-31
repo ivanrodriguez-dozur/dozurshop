@@ -1,1 +1,0 @@
-/* Archivo eliminado para reiniciar el desarrollo del carrusel */

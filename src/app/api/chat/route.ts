@@ -22,19 +22,16 @@ export async function POST(request: NextRequest) {
     const { message, history = [] } = await request.json();
 
     if (!message) {
-      return NextResponse.json(
-        { error: 'Message is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
 
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
-    
+
     // Build conversation history
     const chat = model.startChat({
       history: history.map((msg: { role: string; content: string }) => ({
         role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.content }]
+        parts: [{ text: msg.content }],
       })),
       generationConfig: {
         temperature: 0.7,
@@ -51,9 +48,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ response: text });
   } catch (error) {
     console.error('Gemini API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to process message' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to process message' }, { status: 500 });
   }
 }
