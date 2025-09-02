@@ -1,7 +1,5 @@
-'use client';
-
-import './globals.css';
 import type { ReactNode } from 'react';
+import './globals.css';
 
 import BottomDock from '@/components/BottomDock';
 
