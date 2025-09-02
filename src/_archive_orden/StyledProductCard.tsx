@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 
-import { Product } from '../app/home/types';
+import { Product } from '@/app/home/types';
 
 interface StyledProductCardProps {
   product: Product;

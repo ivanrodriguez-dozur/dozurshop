@@ -1,13 +1,13 @@
   // (mover este useEffect después de la declaración de visibleIndex y soundEnabled)
 "use client";
 
+import BottomDock from "@/components/BottomDock";
+import CommentModal from "@/components/CommentModal";
+import VideoActions from "@/components/VideoActions";
+import VideoFullScreen from "@/components/VideoFullscreen";
 import { supabase } from "@/lib/supabaseClient";
+import { BoomUI, useBoomStore } from "@/store/boomStore";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import BottomDock from "../../components/BottomDock";
-import CommentModal from "../../components/CommentModal";
-import VideoActions from "../../components/VideoActions";
-import VideoFullScreen from "../../components/VideoFullscreen";
-import { BoomUI, useBoomStore } from "../../store/boomStore";
 // Helper to fetch per-user like/save state for a set of boom ids
 async function fetchUserInteractions(boomIds: string[], userId: string) {
   // Likes

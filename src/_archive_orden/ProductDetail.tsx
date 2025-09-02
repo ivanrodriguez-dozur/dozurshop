@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
 
-import { useToast } from '../context/ToastContext';
+import { useToast } from '@/app/context/ToastContext';
 
 import { Product } from './types';
 

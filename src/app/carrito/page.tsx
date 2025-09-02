@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-import { useCartStore } from '../../store/cart';
+import { useCartStore } from '@/store/cart';
 
 export default function Carrito() {
   const { items, add, remove, update, clear } = useCartStore();

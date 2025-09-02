@@ -2,7 +2,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { useCallback } from "react";
-import { useBoomStore } from "../../../store/boomStore"; // ajusta si tu ruta difiere
+import { useBoomStore } from "@/store/boomStore"; // ajusta si tu ruta difiere
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,

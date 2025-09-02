@@ -23,7 +23,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 // ⚠️ Ajusta esta ruta si tu cliente está en otro lugar:
-import { supabase } from "../../../lib/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 
 /* ===================== CONFIG GLOBAL (edita aquí) ===================== */
 const UI_CONFIG = {

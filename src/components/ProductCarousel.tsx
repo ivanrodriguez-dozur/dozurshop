@@ -1,8 +1,8 @@
 'use client';
 import { useRef } from 'react';
 
-import { Product } from '../app/home/types';
-import { useFavoritesStore } from '../store/favorites';
+import { Product } from '@/app/home/types';
+import { useFavoritesStore } from '@/store/favorites';
 
 import ProductCard from './ProductCard';
 

@@ -1,9 +1,9 @@
 'use client';
 import { useState } from 'react';
 
-import PanelSuperior from '../home/components/PanelSuperior';
-import ProductCard from '../../components/ProductCard';
-import { fetchProducts } from '../../lib/products';
+import PanelSuperior from '@/app/home/components/PanelSuperior';
+import ProductCard from '@/components/ProductCard';
+import { fetchProducts } from '@/lib/products';
 
 import { Product } from '@/app/home/types';
 

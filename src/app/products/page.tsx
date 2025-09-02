@@ -1,7 +1,7 @@
 'use client';
-import PanelSuperior from '../home/components/PanelSuperior';
-import ProductCarousel from '../../components/ProductCarousel';
-import { fetchProducts } from '../../lib/products';
+import PanelSuperior from '@/app/home/components/PanelSuperior';
+import ProductCarousel from '@/components/ProductCarousel';
+import { fetchProducts } from '@/lib/products';
 
 export default async function ProductsPage({ searchParams }) {
   const products = await fetchProducts();

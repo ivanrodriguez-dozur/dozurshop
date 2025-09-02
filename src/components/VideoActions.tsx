@@ -3,7 +3,7 @@
 import React, { memo, useMemo } from "react";
 import { IconType } from "react-icons";
 import { FaBookmark, FaCommentDots, FaShareAlt } from "react-icons/fa";
-import { BoomUI } from "../store/boomStore"; // ajusta la ruta si es otra
+import { BoomUI } from "@/store/boomStore"; // ajusta la ruta si es otra
 
 type Props = {
   boom: BoomUI;

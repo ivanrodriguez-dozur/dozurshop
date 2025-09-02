@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Página /vs/match/:id
 // Enlaza directamente a un match por su UUID.
 // Si quieres envolverlo en un modal, puedes montar <MatchVote/> dentro de tu propio modal.

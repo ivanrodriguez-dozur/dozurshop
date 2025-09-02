@@ -97,7 +97,7 @@ const OptimizedProductCard: React.FC<ProductCardProps> = memo(
         >
           {(() => {
             const DEFAULT_IMAGE = 'https://placehold.co/220x220?text=Sin+Imagen';
-            import { buildSupabasePublicUrl } from '../../lib/resolveImageUrl';
+            import { buildSupabasePublicUrl } from '@/lib/resolveImageUrl';
             const raw =
               product.image_url && product.image_url.trim() !== '' ? product.image_url : '';
             const imageUrl = raw ? buildSupabasePublicUrl(raw) : DEFAULT_IMAGE;

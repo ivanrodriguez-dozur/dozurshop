@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation';
 import React from 'react';
 import { FaBell, FaSearch } from 'react-icons/fa';
 
-import { buildSupabasePublicUrl } from '../../../lib/resolveImageUrl';
-import { useProducts } from '../hooks/useProducts';
+import { buildSupabasePublicUrl } from '@/lib/resolveImageUrl';
+import { useProducts } from '@/app/home/hooks/useProducts';
 
 
 function PanelSuperior(props) {

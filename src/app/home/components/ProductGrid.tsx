@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Product } from '../types';
+import { Product } from '@/app/home/types';
 // Usar ProductCard global pasado por props
 
 interface ProductGridProps {

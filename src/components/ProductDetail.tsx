@@ -2,19 +2,31 @@
 import Image from 'next/image';
 import { useState } from 'react';
 
-import { Product } from '../app/home/types';
-import { buildSupabasePublicUrl } from '../lib/resolveImageUrl';
+import { Product } from '@/app/home/types';
+import { buildSupabasePublicUrl } from '@/lib/resolveImageUrl';
 
 import AddToCartBar from './AddToCartBar';
 import SizeSelectorClothes from './SizeSelectorClothes';
 import SizeSelectorShoes from './SizeSelectorShoes';
 
-export default function ProductDetail({ product }: { product: Product }) {
+interface ProductDetailProps {
+  product: Product;
+  onBack?: () => void;
+  onAddToCart?: (args: { product: Product; quantity: number; size: string; color: string }) => void;
+  onFavorite?: () => void;
+  isFavorite?: boolean;
+}
+
+export default function ProductDetail({ product, onBack, onAddToCart, onFavorite, isFavorite }: ProductDetailProps) {
   const [size, setSize] = useState<string | number | null>(null);
   if (!product) return <div className="text-white p-8">Cargando…</div>;
   return (
     <main className="bg-white min-h-screen pb-20">
       <div className="p-4">
+        {/* Back button */}
+        {onBack && (
+          <button onClick={onBack} className="mb-2 text-sm text-blue-500 hover:underline">← Volver</button>
+        )}
         <Image
           src={
             product.image_url && product.image_url.trim() !== ''
@@ -36,7 +48,14 @@ export default function ProductDetail({ product }: { product: Product }) {
           </span>
           <span className="text-gray-400 text-sm">10k Reviews</span>
         </div>
-        <div className="mt-2 text-white text-xl font-bold">{product.name}</div>
+        <div className="mt-2 text-white text-xl font-bold flex items-center gap-2">
+          {product.name}
+          {onFavorite && (
+            <button onClick={onFavorite} aria-label="Favorito" className="ml-2">
+              {isFavorite ? '❤️' : '🤍'}
+            </button>
+          )}
+        </div>
         <div className="text-gray-400 text-sm mb-2">{product.brand}</div>
         <div className="text-white text-sm mb-4">{product.description}</div>
         {product.category === 'shoes' ? (
@@ -53,7 +72,9 @@ export default function ProductDetail({ product }: { product: Product }) {
       </div>
       <AddToCartBar
         onAdd={(qty) => {
-          /* CAMBIAR: lógica para agregar al carrito */
+          if (onAddToCart && size) {
+            onAddToCart({ product, quantity: qty, size: String(size), color: '' });
+          }
         }}
       />
     </main>

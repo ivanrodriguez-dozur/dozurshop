@@ -1,4 +1,4 @@
-import PanelSuperior from '../home/components/PanelSuperior';
+import PanelSuperior from '@/app/home/components/PanelSuperior';
 
 const notifications = [
   {

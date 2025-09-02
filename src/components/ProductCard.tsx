@@ -1,8 +1,8 @@
 'use client';
 import Image from 'next/image';
 
-import { buildSupabasePublicUrl } from '../lib/resolveImageUrl';
-import { Product } from '../app/home/types';
+import { buildSupabasePublicUrl } from '@/lib/resolveImageUrl';
+import { Product } from '@/app/home/types';
 
 interface ProductCardProps {
   product: Product;

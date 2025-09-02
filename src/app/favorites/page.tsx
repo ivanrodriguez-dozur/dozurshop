@@ -4,10 +4,10 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
-import ProductCard from '../../components/ProductCard';
-import { useCartStore } from '../../store/cart';
-import { useFavoritesStore } from '../../store/favorites';
-import { useToast } from '../context/ToastContext';
+import ProductCard from '@/components/ProductCard';
+import { useCartStore } from '@/store/cart';
+import { useFavoritesStore } from '@/store/favorites';
+import { useToast } from '@/app/context/ToastContext';
 
 export default function Favoritos() {
   const [scrolled, setScrolled] = useState(false);

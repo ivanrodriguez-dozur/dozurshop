@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import { supabase } from '../../../../lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 
 import ProductDetailClient from './ProductDetailClient';
 

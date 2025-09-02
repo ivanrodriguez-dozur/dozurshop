@@ -1,10 +1,10 @@
 'use client';
 import React from 'react';
 
-import ProductDetail from '../../home/ProductDetail';
-import { useFavoritesStore } from '../../../store/favorites';
-import { useCartStore } from '../../../store/cart';
-import { Product } from '../../../home/types';
+import ProductDetail from '@/components/ProductDetail';
+import { useFavoritesStore } from '@/store/favorites';
+import { useCartStore } from '@/store/cart';
+import { Product } from '@/app/home/types';
 
 export default function ProductDetailClient({ product }: { product: Product }) {
   const { favorites, toggleFavorite } = useFavoritesStore();

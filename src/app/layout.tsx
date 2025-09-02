@@ -3,7 +3,7 @@
 import './globals.css';
 import type { ReactNode } from 'react';
 
-import BottomDock from '../components/BottomDock';
+import BottomDock from '@/components/BottomDock';
 
 import { ToastProvider } from './context/ToastContext';
 

@@ -4,7 +4,7 @@
 
 import { ReactNode } from 'react';
 
-import { suggestedIcons } from '../../components/suggestedIcons';
+import { suggestedIcons } from '@/components/suggestedIcons';
 
 // Puedes cambiar el nombre, icono o descripción de cada categoría aquí.
 

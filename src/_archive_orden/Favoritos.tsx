@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-import { useFavoritesStore } from '../../store/favorites';
+import { useFavoritesStore } from '@/store/favorites';
 
 export default function Favoritos() {
   const { favorites, toggleFavorite } = useFavoritesStore();
@@ -24,7 +24,7 @@ export default function Favoritos() {
 
   return (
     <div
-      style={{ minHeight: '100vh', background: '#fff', position: 'relative', paddingBottom: 40 }}
+      style={{ minHeight: '100vh', background: '#e01919ff', position: 'relative', paddingBottom: 40 }}
     >
       {/* Título en la esquina superior izquierda */}
       <div
@@ -33,10 +33,10 @@ export default function Favoritos() {
           top: 0,
           left: 0,
           zIndex: 100,
-          background: '#fff',
+          background: '#e40b0bff',
           width: '100vw',
           padding: '18px 0 8px 18px',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.99)',
+          boxShadow: '0 2px 8px rgba(221, 20, 20, 0.99)',
         }}
       >
         <h1
@@ -67,7 +67,7 @@ export default function Favoritos() {
                   left: -40,
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  background: '#fff',
+                  background: '#e01212ff',
                   border: 'none',
                   borderRadius: 16,
                   padding: 8,
@@ -86,7 +86,7 @@ export default function Favoritos() {
                   right: -40,
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  background: '#fff',
+                  background: '#e01212ff',
                   border: 'none',
                   borderRadius: 16,
                   padding: 8,
@@ -125,7 +125,7 @@ export default function Favoritos() {
                   <div
                     key={product.id}
                     style={{
-                      background: '#f5f5f5',
+                      background: '#e91515ff',
                       borderRadius: 18,
                       boxShadow: '0 2px 12px #0001',
                       display: 'flex',
@@ -144,7 +144,7 @@ export default function Favoritos() {
                   >
                     {(() => {
                       const DEFAULT = 'https://placehold.co/520x300?text=Sin+Imagen';
-                      import { buildSupabasePublicUrl } from '../../../lib/resolveImageUrl';
+                      import { buildSupabasePublicUrl } from '@/lib/resolveImageUrl';
                       const src =
                         product.image_url && product.image_url.trim() !== ''
                           ? buildSupabasePublicUrl(product.image_url)
@@ -197,7 +197,7 @@ export default function Favoritos() {
                         position: 'absolute',
                         top: 18,
                         right: 18,
-                        background: '#fff',
+                        background: '#e90b0bff',
                         border: 'none',
                         borderRadius: 18,
                         width: 40,
