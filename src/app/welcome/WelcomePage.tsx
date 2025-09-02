@@ -20,10 +20,12 @@
  *  - next.config.js: agregar "<TU-PROYECTO>.supabase.co" en images.domains
  */
 
-import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+
 // ⚠️ Ajusta esta ruta si tu cliente está en otro lugar:
 import { supabase } from "@/lib/supabaseClient";
+
 
 /* ===================== CONFIG GLOBAL (edita aquí) ===================== */
 const UI_CONFIG = {
