@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState, useMemo } from 'react';
 
-import { supabase } from '../../../../lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 import { Product } from '../types';
 
 export function useProducts() {

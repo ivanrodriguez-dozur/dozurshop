@@ -1,6 +1,7 @@
 'use client';
 import Image from 'next/image';
 
+import { useGamificationStore } from '@/store/gamificationStore';
 import { buildSupabasePublicUrl } from '@/lib/resolveImageUrl';
 import { Product } from '@/app/home/types';
 
@@ -17,16 +18,26 @@ export default function ProductCard({
   onFavorite,
   onProductClick,
 }: ProductCardProps) {
+  const { addXp } = useGamificationStore();
+  
   // Fallback por si el producto no tiene image_url
   const DEFAULT_IMAGE = 'https://placehold.co/220x220?text=Sin+Imagen';
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onFavorite(product);
+    
+    // Dar XP por marcar como favorito
+    addXp(5, 'Producto marcado como favorito');
   };
 
   const handleCardClick = () => {
-    if (onProductClick) onProductClick(product.id);
+    if (onProductClick) {
+      onProductClick(product.id);
+      
+      // Dar XP por ver detalles del producto
+      addXp(2, 'Ver detalles de producto');
+    }
   };
 
   return (

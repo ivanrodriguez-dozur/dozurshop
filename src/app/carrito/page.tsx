@@ -6,9 +6,11 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { useCartStore } from '@/store/cart';
+import { useGamificationStore } from '@/store/gamificationStore';
 
 export default function Carrito() {
   const { items, add, remove, update, clear } = useCartStore();
+  const { addXp } = useGamificationStore();
   const router = useRouter();
 
   // Calcular totales
@@ -19,6 +21,19 @@ export default function Carrito() {
   const total = subtotal + delivery - subtotal * discount;
 
   const [showInfo, setShowInfo] = useState(false);
+  
+  const handleCheckout = () => {
+    // Dar XP basado en el total de la compra
+    const purchaseXp = Math.floor(total / 10000) * 10; // 10 XP por cada 10,000 COP
+    const itemsXp = items.length * 5; // 5 XP por cada item
+    const totalXp = Math.max(purchaseXp + itemsXp, 50); // Mínimo 50 XP por compra
+    
+    addXp(totalXp, `Compra realizada: ${items.length} productos`);
+    
+    // Aquí iría la lógica real de checkout
+    alert('¡Compra realizada! Has ganado ' + totalXp + ' XP 🎉');
+    clear(); // Limpiar carrito después de la compra
+  };
   return (
     <div style={{ maxWidth: 480, margin: '0 auto', padding: 24, paddingBottom: 110 }}>
       <h1 style={{ fontWeight: 700, fontSize: 26, marginBottom: 24, textAlign: 'center' }}>
@@ -44,7 +59,7 @@ export default function Carrito() {
                   position: 'relative',
                   cursor: 'pointer',
                 }}
-                onClick={() => router.push(`/product/${item.slug ?? item.id}`)}
+                onClick={() => router.push(`/product/${item.id}`)}
               >
                 <Image
                   src={item.image}
@@ -227,6 +242,7 @@ export default function Carrito() {
               <span>${total.toLocaleString('es-CO')}</span>
             </div>
             <button
+              onClick={handleCheckout}
               style={{
                 width: '100%',
                 marginTop: 24,

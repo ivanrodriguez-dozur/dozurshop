@@ -6,6 +6,67 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
+
+/* Estilos para mejorar touch en móviles */
+.touch-optimized {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Optimización para TikTok Feed móvil */
+.tiktok-mobile-optimized {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+/* Mejora la respuesta de botones en móvil */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Línea de texto truncada */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Estilos para mejorar touch en el puzzle */
+.puzzle-touch-container {
+  /* Removemos touch-action: none de aquí para permitir scroll */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.puzzle-draggable-piece {
+  /* Removemos touch-action: none para permitir scroll normal */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.puzzle-pieces-container {
+  touch-action: pan-y; /* Permite scroll vertical en el contenedor de piezas */
+}
+
+.puzzle-board-container {
+  touch-action: pan-y; /* Permite scroll vertical en el tablero */
+}
+
 /* Margen responsivo para el banner promocional */
 .promo-banner-responsive {
   /* Elimina los márgenes aquí para que mx-4 de Tailwind funcione */

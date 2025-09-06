@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, CSSProperties } from "react";
 import { supabase } from "@/lib/supabaseClient"; // <- ruta relativa corregida
 
 export default function LoginPage() {
@@ -99,7 +99,7 @@ const container = {
   color: "#fff",
 };
 
-const card = {
+const card: CSSProperties = {
   width: "100%",
   maxWidth: 360,
   padding: 24,

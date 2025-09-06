@@ -5,6 +5,7 @@
 
 import MatchVote from "@/components/vs/MatchVote";
 
-export default function MatchPage({ params }: { params: { id: string } }) {
-  return <MatchVote matchId={params.id} />;
+export default async function MatchPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <MatchVote matchId={id} />;
 }

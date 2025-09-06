@@ -1,14 +1,22 @@
-import { supabase } from '../../lib/supabaseClient';
+// Utilidad para construir la URL pública de una imagen almacenada en Supabase Storage
+// Si la imagen ya es una URL absoluta, la retorna igual
+// Si es una ruta relativa, la convierte usando las variables de entorno
 
-// Build a public URL for a Supabase storage object in the 'products' bucket.
-export function buildSupabasePublicUrl(path: string) {
-  if (!path) return null;
-  // If already a full URL, return as-is
-  if (path.startsWith('http')) return path;
-  return `https://ktpajrnflcqwgaoaywuu.supabase.co/storage/v1/object/public/products/${path}`;
+export function buildSupabasePublicUrl(path: string): string {
+  if (!path) return '';
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+
+  // Ajusta el bucket y la ruta según tu estructura
+  const bucket = 'productos'; // Cambia si usas otro bucket
+  const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!baseUrl) return path;
+
+  // Elimina prefijo public/ si existe
+  let cleanPath = path.replace(/^public\//, '');
+  // Si la ruta ya incluye el bucket, no lo dupliques
+  if (cleanPath.startsWith(bucket + '/')) {
+    cleanPath = cleanPath.substring(bucket.length + 1);
+  }
+
+  return `${baseUrl}/storage/v1/object/public/${bucket}/${cleanPath}`;
 }
-
-// Note: we avoid network HEAD requests here to keep this helper sync and safe for SSR.
-// Components should use this to construct the URL and optionally perform client-side
-// verification (fetch/HEAD) if needed.
-export default buildSupabasePublicUrl;

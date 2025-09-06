@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  transcode-worker:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env.worker
+    # Optional: limit resources
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

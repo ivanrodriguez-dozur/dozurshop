@@ -7,10 +7,13 @@ import { useEffect, useRef, useState } from 'react';
 import ProductCard from '@/components/ProductCard';
 import { useCartStore } from '@/store/cart';
 import { useFavoritesStore } from '@/store/favorites';
+import { useGamificationStore } from '@/store/gamificationStore';
 import { useToast } from '@/app/context/ToastContext';
 
 export default function Favoritos() {
   const [scrolled, setScrolled] = useState(false);
+  const { favorites, toggleFavorite } = useFavoritesStore();
+  const { addXp } = useGamificationStore();
   // Cambia el color de fondo de todo el body en desktop cuando hay scroll
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -43,7 +46,6 @@ export default function Favoritos() {
     ref.addEventListener('scroll', handleScroll);
     return () => ref.removeEventListener('scroll', handleScroll);
   }, []);
-  const { favorites, toggleFavorite } = useFavoritesStore();
   const { add } = useCartStore();
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -260,7 +262,7 @@ export default function Favoritos() {
                 </div>
                 <ProductCard
                   product={product}
-                  onFavorite={() => toggleFavorite(product)}
+                  onFavorite={() => toggleFavorite(product, (action: string) => addXp(3, action))}
                   onAddToCart={() => {
                     add(product);
                     toast.show('Producto agregado al carrito');

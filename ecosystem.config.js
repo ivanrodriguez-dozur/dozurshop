@@ -1,0 +1,19 @@
+module.exports = {
+  apps: [
+    {
+      name: 'transcode-worker',
+      script: 'node',
+      args: './scripts/worker.cjs',
+      instances: 1,
+      autorestart: true,
+      watch: false,
+      max_memory_restart: '512M',
+      env: {
+        NODE_ENV: 'production',
+        SUPABASE_URL: 'https://ktpajrnflcqwgaoaywuu.supabase.co',
+        SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0cGFqcm5mbGNxd2dhb2F5d3V1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTgxODksImV4cCI6MjA3MTIzNDE4OX0.2bjg5oJSecVULZUe2qvw4ANDetBVZALgXnCrahl4XY8',
+        SUPABASE_SERVICE_ROLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0cGFqcm5mbGNxd2dhb2F5d3V1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTgxODksImV4cCI6MjA3MTIzNDE4OX0.2bjg5oJSecVULZUe2qvw4ANDetBVZALgXnCrahl4XY8'
+      }
+    }
+  ]
+};

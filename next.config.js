@@ -9,6 +9,7 @@ const nextConfig = {
     domains: [
       'placehold.co',
       'ktpajrnflcqwgaoaywuu.supabase.co',
+      'images.unsplash.com',
       // Uncomment the next line if you want to use the old domains format for dicebear
       // "api.dicebear.com",
     ],
@@ -16,6 +17,10 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "api.dicebear.com",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
       },
     ],
   },

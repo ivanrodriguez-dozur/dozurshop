@@ -1,614 +1,829 @@
 "use client";
-import React, { useRef, useEffect, useState } from "react";
-import Image from "next/image";
-import { FaFire, FaLock } from "react-icons/fa";
-import { GiCrossedSwords, GiTwoCoins } from "react-icons/gi";
-import { MdBookmark, MdFavorite, MdLocalActivity } from "react-icons/md";
-import { TbTournament } from "react-icons/tb";
-import { supabase } from "@/lib/supabaseClient";
 
-// API helpers perfil
-import { loadProfile, updateAvatar, updateHaloColor } from "@/lib/profileApi";
-// export default ImportedPerfilUsuario; // Removed to avoid multiple default exports
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
-// Dummy fetchStats function, replace with your actual implementation or import
-type Stats = {
-  coins: number;
-  points: number;
-  level: number;
-};
+import StatsGridProGarmin from '@/components/profile/StatsGridProGarmin';
+import { useGamificationStore } from '@/store/gamificationStore';
 
-async function fetchStats(): Promise<Stats> {
-  // Replace this with your actual stats fetching logic
-  return {
-    coins: 0,
-    points: 0,
-    level: 1,
-  };
-}
-
-// ================== CONFIG, StatCard y SkeletonRow ==================
-const CONFIG = {
-  ui: {
-    ringSize: 120,
-    ringThickness: 8,
-    ringSpeedSec: 6,
-  },
-  brand: {
-    neon: "#00fff7",
-    auraGlow: "",
-  },
-  labels: {
-    coins: "Coins",
-    points: "Puntos",
-    level: "Nivel",
-    redeem: "Canjear premios",
-  },
-  help: {
-    coins: { title: "Coins", body: "Tus monedas acumuladas por actividad." },
-    points: { title: "Puntos", body: "Puntos obtenidos por acciones y retos." },
-    level: { title: "Nivel", body: "Sube de nivel participando y ganando." },
-  },
-  equivalences: {
-    pointsPerCoin: 100,
-    coinsPerLevelUp: 10,
-  },
-  routes: {
-    openVS: "/vs",
-    openTournaments: "/tournaments",
-  },
-};
-
-function StatCard({
-  icon,
-  label,
-  value,
-  glowHex,
-  // helpTitle,
-  // helpBody,
-  hidden,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: React.ReactNode;
-  glowHex: string;
-  helpTitle: string;
-  helpBody: string;
-  hidden?: boolean;
-}) {
-  return (
-    <div
-      className="rounded-xl bg-white/10 p-4 flex flex-col items-center justify-center"
-      style={{
-        boxShadow: `0 0 12px ${glowHex}44`,
-        opacity: hidden ? 0.3 : 1,
-        filter: hidden ? "blur(2px)" : "none",
-        transition: "all 0.2s",
-      }}
-    >
-      <div className="text-2xl mb-1">{icon}</div>
-      <div className="font-bold text-lg">{value}</div>
-      <div className="text-xs opacity-70">{label}</div>
-    </div>
-  );
-}
-
-function SkeletonRow() {
-  return <div className="animate-pulse h-8 bg-white/10 rounded-lg my-2" />;
-}
-
-/* ===== Tabs disponibles ===== */
-type TabKey = "likes" | "saves" | "history";
-
-/* =================================================================== */
-/*                   PERFIL USUARIO (con login + fixes)                 */
-/* =================================================================== */
-export default function PerfilUsuario() {
-  // Edición de perfil
-  const [editMode, setEditMode] = useState(false);
-  const [editName, setEditName] = useState("");
-  const [editAvatar, setEditAvatar] = useState<string | null>(null);
-  const [editHalo, setEditHalo] = useState<string>("#00fff7");
-  const [loadingSave, setLoadingSave] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  // ---- estado base que ya usabas ----
-  // Define UserProfile type if not imported from elsewhere
-  type UserProfile = {
-    id: string;
-    nickname?: string;
-    avatar_url?: string;
-    coins_hidden?: boolean;
-    halo_color?: string;
-    // Add other fields as needed
-  };
+export default function ProfilePage() {
+  const { 
+    loadUserData, 
+    isLoading, 
+    user, 
+    updateProfile, 
+    uploadCoverPhoto, 
+    uploadProfilePhoto,
+    signIn,
+    signUp,
+    signOut
+  } = useGamificationStore();
   
-  // Handler de logout
-  const onLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.reload();
-  };
+  console.log('ProfilePage renderizado. Estado del usuario:', user)
+  console.log('isLoading:', isLoading)
+  console.log('Funciones disponibles:', { signIn: !!signIn, signUp: !!signUp, signOut: !!signOut })
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState<{ [key: string]: boolean }>({});
+  const [tempValues, setTempValues] = useState({
+    name: '',
+    bio: '',
+    email: '',
+    phone: ''
+  });
+  const [authMode, setAuthMode] = useState<'login' | 'register' | null>(null);
+  const [authForm, setAuthForm] = useState({
+    email: '',
+    password: '',
+    name: ''
+  });
+  const [authLoading, setAuthLoading] = useState(false);
   
-    const [profile, setProfile] = useState<UserProfile | null>(null);
-    const [stats, setStats] = useState<Stats | null>(null);
-    // Define ActivityItem type if not imported from elsewhere
-    type ActivityItem = {
-      // Add the properties that represent an activity item
-      id: string;
-      title: string;
-      // Add more fields as needed
-    };
-
-  const [act, setAct] = useState<{
-    likes: ActivityItem[];
-    saves: ActivityItem[];
-    history: ActivityItem[];
-  } | null>(null);
-  const [loadingAct, setLoadingAct] = useState(true);
-
-  // ---- NUEVO: sesión + tabs + switch coins ----
-    const [sessionUser, setSessionUser] = useState<string | null>("user"); // simula usuario logueado
-  const [showCoins, setShowCoins] = useState(true);
-  const [activeTab, setActiveTab] = useState<TabKey>("likes");
-
-  // ================== Dummy fetchActivity ==================
-  async function fetchActivity() {
-    // Replace this with your actual activity fetching logic
-    return {
-      likes: [],
-      saves: [],
-      history: [],
-    };
-  }
-
-  // ================== Auth + datos ==================
+  // Log cuando cambie authMode
   useEffect(() => {
-    // Prellenar campos de edición cuando se cargue el perfil
-    if (profile) {
-      setEditName(profile.nickname || "");
-      setEditAvatar(profile.avatar_url || null);
-      setEditHalo(profile.halo_color || CONFIG.brand.neon);
+    console.log('🎯 authMode cambió a:', authMode)
+  }, [authMode])
+
+  useEffect(() => {
+    console.log('useEffect ejecutado, cargando datos del usuario...')
+    loadUserData();
+    
+    // Test completo de conexión a Supabase
+    import('@/lib/testSupabase').then(({ testSupabaseConnection }) => {
+      testSupabaseConnection().then(result => {
+        console.log('Resultado del test de Supabase:', result)
+      })
+    })
+  }, [loadUserData]);
+
+  useEffect(() => {
+    if (user) {
+      setTempValues({
+        name: user.name || 'Usuario',
+        bio: user.bio || 'Agregar descripción...',
+        email: user.email || '',
+        phone: user.phone || ''
+      });
     }
-    (async () => {
-      const { data } = await supabase.auth.getUser();
-      const userId = data.user?.id ?? null;
-      setSessionUser(userId);
+  }, [user]);
 
-      // Perfil & stats
-      let p = null;
-      if (userId) {
-        p = await loadProfile(userId);
+  // Calcular progreso del nivel
+  const currentLevelXp = ((user?.level || 1) - 1) * 1000;
+  const nextLevelXp = (user?.level || 1) * 1000;
+  const levelProgress = Math.min(100, Math.max(0, ((user?.totalXp || 0) - currentLevelXp) / (nextLevelXp - currentLevelXp) * 100));
+
+  const toggleEdit = (field: string) => {
+    setIsEditing(prev => ({ ...prev, [field]: !prev[field] }));
+  };
+
+  const saveEdit = async (field: string) => {
+    const updates: any = {};
+    updates[field] = tempValues[field as keyof typeof tempValues];
+    
+    const result = await updateProfile(updates);
+    if (result.success) {
+      setIsEditing(prev => ({ ...prev, [field]: false }));
+    } else {
+      alert('Error al guardar: ' + result.error);
+    }
+  };
+
+  const handleFileUpload = async (file: File, type: 'cover' | 'avatar') => {
+    if (type === 'cover') {
+      const result = await uploadCoverPhoto(file);
+      if (!result.success) {
+        alert('Error al subir imagen: ' + result.error);
       }
-      setProfile(p);
-      setStats(await fetchStats());
+    } else {
+      const result = await uploadProfilePhoto(file);
+      if (!result.success) {
+        alert('Error al subir imagen: ' + result.error);
+      }
+    }
+  };
 
-      // Actividad
-      setLoadingAct(true);
-      const a = await fetchActivity();
-      setAct(a);
-      setLoadingAct(false);
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile]);
-
-  // ================== Handlers ==================
-  // 1) Login CTA → /auth/login
-  const goLogin = () => (window.location.href = "/auth/login");
-
-  // 2) Canjear → Home (NO bienvenida)
-  const goShop = () => (window.location.href = "/HomePage");
-
-  // 3) Fix: persistir visibilidad de coins
-  const onToggleCoins = async () => {
-    const next = !showCoins;
-    setShowCoins(next); // UI inmediata
+  const handleAuth = async (mode: 'login' | 'register') => {
+    console.log('🚀 handleAuth ejecutado con modo:', mode)
+    console.log('📝 Datos del formulario:', authForm)
+    
+    // Validación básica
+    if (!authForm.email || !authForm.password) {
+      alert('Por favor completa todos los campos')
+      return
+    }
+    
+    if (mode === 'register' && !authForm.name) {
+      alert('Por favor ingresa tu nombre')
+      return
+    }
+    
+    setAuthLoading(true)
+    let result;
+    
     try {
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth.user?.id;
-      if (!uid) return; // si no hay login, solo UI local
-
-      // Guarda bandera en tu tabla de perfil (ajusta nombre/columna si difiere)
-      await supabase
-        .from("profiles")
-        .update({ coins_hidden: next ? false : true })
-        .eq("id", uid);
-    } catch {
-      // en caso de error, revierte UI
-      setShowCoins(!next);
-    }
-  };
-
-  // ================== UI helpers ==================
-  const nickname = profile?.nickname || "Como Te Dicen";
-
-  // Guardar cambios de perfil
-  const handleSave = async () => {
-    setLoadingSave(true);
-    try {
-      if (!profile) throw new Error("No hay perfil cargado");
-      const userId = profile.id;
-      // Aquí puedes agregar lógica para actualizar el nombre si tienes una función updateNickname
-      // if (editName !== profile?.nickname) {
-      //   await updateNickname(userId, editName);
-      // }
-      if (editHalo !== profile?.halo_color) {
-        await updateHaloColor(userId, editHalo);
+      if (mode === 'login') {
+        console.log('🔑 Ejecutando signIn...')
+        result = await signIn(authForm.email, authForm.password);
+      } else {
+        console.log('📝 Ejecutando signUp...')
+        result = await signUp(authForm.email, authForm.password, authForm.name);
       }
-      if (editAvatar && editAvatar !== profile?.avatar_url && fileInputRef.current?.files?.[0]) {
-        await updateAvatar(userId, editAvatar);
-        // setEditAvatar(url); // El mock solo retorna { success: true }
+      
+      console.log('📊 Resultado de autenticación:', result)
+      
+      if (result.success) {
+        console.log('✅ Autenticación exitosa, limpiando formulario...')
+        setAuthMode(null);
+        setAuthForm({ email: '', password: '', name: '' });
+        
+        if (result.message) {
+          alert(result.message)
+        }
+      } else {
+        console.error('❌ Error en autenticación:', result.error)
+        alert('Error: ' + result.error);
       }
-      setToast("Perfil actualizado");
-      setEditMode(false);
-      // Refrescar perfil
-      const p = await loadProfile(userId);
-      setProfile(p);
-    } catch {
-      setToast("Error al guardar cambios");
+    } catch (error) {
+      console.error('💥 Error capturado en handleAuth:', error)
+      alert('Error inesperado: ' + error);
     }
-    setLoadingSave(false);
+    
+    setAuthLoading(false);
   };
 
-  // Cambiar avatar (previsualización)
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (ev) => setEditAvatar(ev.target?.result as string);
-      reader.readAsDataURL(file);
-    }
+  const handleSignOut = async () => {
+    await signOut();
   };
 
-  // Dummy ActivityGrid component (replace with your actual implementation or import)
-  type ActivityGridProps = {
-    items: (ActivityItem & { videoUrl?: string })[];
-    emptyText: string;
+  const toggleSection = (section: string) => {
+    setActiveSection(activeSection === section ? null : section);
   };
 
-  function ActivityGrid({ items, emptyText }: ActivityGridProps) {
-    if (!items || items.length === 0) {
-      return (
-        <div className="text-center text-sm opacity-60 py-8">{emptyText}</div>
-      );
-    }
+  if (isLoading) {
     return (
-      <div className="grid gap-2">
-        {items.map((item) => (
-          <div key={item.id} className="rounded-lg bg-white/10 p-3 flex flex-col gap-2">
-            <div className="font-bold mb-1">{item.title}</div>
-            {item.videoUrl && (
-              <video
-                src={item.videoUrl}
-                controls
-                className="w-full rounded-lg border border-white/10 bg-black"
-                style={{ maxHeight: 240 }}
-              />
-            )}
-          </div>
-        ))}
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
 
-  const renderActivity = () => {
-    if (loadingAct) return <SkeletonRow />;
-
-    if (activeTab === "likes")
-      return (
-        <ActivityGrid
-          items={act?.likes ?? []}
-          emptyText="Aún no has dado 🔥 a ningún Boom."
-        />
-      );
-
-    if (activeTab === "saves")
-      return (
-        <ActivityGrid
-          items={act?.saves ?? []}
-          emptyText="Aún no has guardado Booms."
-        />
-      );
-
+  // Si no está autenticado, mostrar botones de auth
+  if (!user?.isAuthenticated) {
+    console.log('🔍 Renderizando pantalla de no autenticado')
     return (
-      <ActivityGrid
-        items={act?.history ?? []}
-        emptyText="Tu historial está vacío."
-      />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        {/* Modal de autenticación */}
+        {authMode && (
+          <>
+            {/* Overlay para bloquear otros elementos */}
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" style={{ zIndex: 10000 }} onClick={() => setAuthMode(null)}></div>
+            <div className="fixed inset-0 flex items-center justify-center p-4 pointer-events-none" style={{ zIndex: 10001 }}>
+              <div className="bg-white rounded-xl p-6 w-full max-w-md pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+                <h2 className="text-xl font-bold text-gray-800 mb-4">
+                  {authMode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'}
+                </h2>
+                
+                <div className="space-y-4">
+                  {authMode === 'register' && (
+                    <input
+                      type="text"
+                      placeholder="Nombre completo"
+                      value={authForm.name}
+                      onChange={(e) => setAuthForm(prev => ({ ...prev, name: e.target.value }))}
+                      className="w-full p-3 border rounded-lg focus:border-blue-500 focus:outline-none"
+                    />
+                  )}
+                  
+                  <input
+                    type="email"
+                    placeholder="Correo electrónico"
+                    value={authForm.email}
+                    onChange={(e) => setAuthForm(prev => ({ ...prev, email: e.target.value }))}
+                    className="w-full p-3 border rounded-lg focus:border-blue-500 focus:outline-none"
+                  />
+                  
+                  <input
+                    type="password"
+                    placeholder="Contraseña"
+                    value={authForm.password}
+                    onChange={(e) => setAuthForm(prev => ({ ...prev, password: e.target.value }))}
+                    className="w-full p-3 border rounded-lg focus:border-blue-500 focus:outline-none"
+                  />
+                  
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => {
+                        console.log('🎯 Botón del modal clickeado con modo:', authMode)
+                        handleAuth(authMode)
+                      }}
+                      disabled={authLoading}
+                      className="flex-1 bg-blue-600 text-white p-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
+                    >
+                      {authLoading ? 'Cargando...' : authMode === 'login' ? 'Entrar' : 'Registrarse'}
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        console.log('❌ Botón cancelar clickeado')
+                        setAuthMode(null)
+                      }}
+                      className="px-4 py-3 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                  
+                  <p className="text-center text-sm text-gray-600">
+                    {authMode === 'login' ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}
+                    <button
+                      onClick={() => {
+                        console.log('🔄 Cambiando modo de auth')
+                        setAuthMode(authMode === 'login' ? 'register' : 'login')
+                      }}
+                      className="text-blue-600 hover:underline ml-1"
+                    >
+                      {authMode === 'login' ? 'Registrarse' : 'Iniciar sesión'}
+                    </button>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Pantalla de bienvenida cuando no hay modal */}
+        {!authMode && (
+          <div className="bg-white rounded-xl p-8 max-w-md w-full text-center">
+            <h1 className="text-2xl font-bold text-gray-800 mb-6">Bienvenido a DozurShop</h1>
+            <p className="text-gray-600 mb-8">Para acceder a tu perfil y funciones de gamificación, necesitas iniciar sesión</p>
+            
+            <div className="space-y-4">
+              <button
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  console.log('🔴 Botón Iniciar Sesión clickeado - EVENTO CAPTURADO')
+                  setAuthMode('login')
+                }}
+                className="w-full bg-blue-600 text-white p-3 rounded-lg font-medium hover:bg-blue-700 cursor-pointer"
+                style={{ zIndex: 1000, position: 'relative' }}
+              >
+                Iniciar Sesión
+              </button>
+              
+              <button
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  console.log('🟢 Botón Crear Cuenta clickeado - EVENTO CAPTURADO')
+                  setAuthMode('register')
+                }}
+                className="w-full border border-blue-600 text-blue-600 p-3 rounded-lg font-medium hover:bg-blue-50 cursor-pointer"
+                style={{ zIndex: 1000, position: 'relative' }}
+              >
+                Crear Cuenta
+              </button>
+            </div>
+            
+            {/* Debug info */}
+            <div className="mt-4 text-xs text-gray-400">
+              Debug: authMode = {authMode || 'null'}
+            </div>
+          </div>
+        )}
+      </div>
     );
-  };
+  }
 
   return (
-    <div className="min-h-screen w-full bg-[#0A0A0B] text-white pb-24">
-      {/* Header */}
-      <div className="px-5 pt-4 pb-2 flex items-center justify-between">
-        <h1 className="text-lg font-extrabold tracking-wide">Tu Perfil</h1>
-        {sessionUser && !editMode && (
-          <button
-            onClick={() => setEditMode(true)}
-            className="text-xs px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 font-bold transition flex items-center gap-1"
-            title="Editar perfil"
-          >
-            <span>Editar</span>
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M17.414 2.586a2 2 0 0 0-2.828 0l-9.5 9.5A2 2 0 0 0 4 13.414V16a1 1 0 0 0 1 1h2.586a2 2 0 0 0 1.414-.586l9.5-9.5a2 2 0 0 0 0-2.828l-2-2ZM6 15H5v-1l8.293-8.293 1 1L6 15Zm9.707-9.707-1-1 1-1a1 1 0 0 1 1.414 1.414l-1 1Z"/></svg>
-          </button>
+    <div className="min-h-screen bg-gray-50">
+      {/* Foto de portada editable */}
+      <div className="relative h-48 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 overflow-hidden">
+        {user?.coverPhoto && (
+          <img 
+            src={user.coverPhoto} 
+            alt="Portada" 
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
+        <div className="absolute inset-0 bg-black/20"></div>
+        {user?.isAuthenticated && (
+          <div className="absolute top-4 right-4 flex space-x-2">
+            <button
+              onClick={handleSignOut}
+              className="bg-red-500/20 backdrop-blur-sm text-white p-2 rounded-lg hover:bg-red-500/30 transition-colors"
+              title="Cerrar sesión"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
+            
+            <label className="bg-white/20 backdrop-blur-sm text-white p-2 rounded-lg hover:bg-white/30 transition-colors cursor-pointer">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleFileUpload(file, 'cover');
+                }}
+                className="hidden"
+              />
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </label>
+          </div>
         )}
       </div>
 
-      {/* ====== LOGIN CTA cuando NO hay sesión ====== */}
-      {!sessionUser && (
-        <div className="mx-5 mb-4 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm">
-          <div className="font-bold mb-1">Inicia sesión</div>
-          <p className="opacity-80">
-            Para editar tu avatar, guardar cambios y sincronizar tu actividad.
-          </p>
-          <button
-            onClick={goLogin}
-            className="mt-3 px-4 py-2 rounded-xl bg-white text-black font-bold w-full"
-          >
-            Iniciar sesión
-          </button>
-        </div>
-      )}
-
-      {/* Avatar + nickname */}
-      <div className="px-5 mt-2 flex flex-col items-center">
-        {/* Avatar y halo */}
-        <div className="relative group" style={{ width: CONFIG.ui.ringSize, height: CONFIG.ui.ringSize }}>
-          <div
-            className="absolute inset-0 rounded-full transition-all duration-300"
-            style={{
-              background: `conic-gradient(from 0deg, rgba(0,0,0,0) 0deg, rgba(0,0,0,0) 240deg, ${editMode ? editHalo : (profile?.halo_color || CONFIG.brand.neon)} 300deg, rgba(0,0,0,0) 330deg, rgba(0,0,0,0) 360deg)`,
-              WebkitMask: `radial-gradient(farthest-side, transparent calc(100% - ${CONFIG.ui.ringThickness}px), #000 0)`,
-              mask: `radial-gradient(farthest-side, transparent calc(100% - ${CONFIG.ui.ringThickness}px), #000 0)`,
-              animation: `spin ${CONFIG.ui.ringSpeedSec}s linear infinite`,
-              boxShadow: `0 0 22px ${(editMode ? editHalo : (profile?.halo_color || CONFIG.brand.neon))}88`,
-            }}
-          />
-          <div
-            className={`absolute rounded-full overflow-hidden bg-white/5 border border-white/10 ${CONFIG.brand.auraGlow}`}
-            style={{ inset: CONFIG.ui.ringThickness + 2 }}
-          >
-            {editMode ? (
-              <>
-                <label htmlFor="avatar-upload" className="w-full h-full flex items-center justify-center cursor-pointer group-hover:opacity-80 transition">
-                  {editAvatar ? (
-                    <Image src={editAvatar} alt="avatar" fill sizes="120px" className="object-cover" />
-                  ) : (
-                    <span className="text-3xl">🧑‍🎤</span>
-                  )}
-                  <input
-                    id="avatar-upload"
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleAvatarChange}
-                  />
-                </label>
-              </>
-            ) : profile?.avatar_url ? (
-              <Image
-                src={profile.avatar_url}
-                alt={nickname}
-                fill
-                sizes="120px"
-                className="object-cover"
-                priority
+      {/* Foto de perfil centrada */}
+      <div className="relative -mt-16 flex justify-center">
+        <div className="relative">
+          <div className="w-32 h-32 bg-white rounded-full p-2 shadow-lg">
+            {user?.avatar ? (
+              <img 
+                src={user.avatar} 
+                alt="Perfil" 
+                className="w-full h-full rounded-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-3xl">
-                🧑‍🎤
+              <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
+                <span className="text-3xl font-bold text-white">
+                  {user?.name?.[0]?.toUpperCase() || 'U'}
+                </span>
               </div>
             )}
           </div>
-        </div>
-        {/* Nombre debajo del avatar */}
-        <div className="mt-3 text-xl font-extrabold">
-          {editMode ? (
-            <input
-              type="text"
-              value={editName}
-              onChange={e => setEditName(e.target.value)}
-              className="bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-white text-center font-bold outline-none focus:ring-2 focus:ring-cyan-400 transition"
-              maxLength={32}
-              autoFocus
-            />
-          ) : (
-            nickname
+          {user?.isAuthenticated && (
+            <label className="absolute bottom-2 right-2 bg-blue-600 text-white p-2 rounded-full shadow-lg hover:bg-blue-700 transition-colors cursor-pointer">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleFileUpload(file, 'avatar');
+                }}
+                className="hidden"
+              />
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </label>
           )}
         </div>
-        {/* Selector de color de halo */}
-        {editMode && (
-          <div className="mt-2 flex items-center gap-2">
-            <span className="text-xs opacity-70">Color de halo:</span>
+      </div>
+
+      {/* Nombre editable */}
+      <div className="text-center mt-4 px-4">
+        {isEditing.name ? (
+          <div className="flex items-center justify-center space-x-2">
             <input
-              type="color"
-              value={editHalo}
-              onChange={e => setEditHalo(e.target.value)}
-              className="w-7 h-7 rounded-full border-none outline-none cursor-pointer"
+              type="text"
+              value={tempValues.name}
+              onChange={(e) => setTempValues(prev => ({ ...prev, name: e.target.value }))}
+              className="text-2xl font-bold text-gray-800 bg-transparent border-b-2 border-blue-500 text-center focus:outline-none"
+              autoFocus
             />
-          </div>
-        )}
-        {/* Botones de acción en edición */}
-        {editMode && (
-          <div className="flex gap-2 mt-4">
-            <button
-              onClick={handleSave}
-              disabled={loadingSave}
-              className="px-4 py-1 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white font-bold transition disabled:opacity-60"
+            <button 
+              onClick={() => saveEdit('name')}
+              className="text-green-600 hover:text-green-700"
             >
-              {loadingSave ? "Guardando..." : "Guardar"}
-            </button>
-            <button
-              onClick={() => { setEditMode(false); setEditName(profile?.nickname || ""); setEditAvatar(profile?.avatar_url || null); setEditHalo(profile?.halo_color || CONFIG.brand.neon); }}
-              disabled={loadingSave}
-              className="px-4 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold transition"
-            >
-              Cancelar
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
             </button>
           </div>
-        )}
-        {/* Toast feedback */}
-        {toast && (
-          <div className="mt-3 px-4 py-2 rounded-lg bg-cyan-700/90 text-white text-sm font-bold animate-fade-in-out">
-            {toast}
+        ) : (
+          <div className="flex items-center justify-center space-x-2">
+            <span className="text-2xl font-bold text-gray-800">{user?.name || 'Usuario'}</span>
+            {user?.isAuthenticated && (
+              <button 
+                onClick={() => toggleEdit('name')}
+                className="text-gray-400 hover:text-blue-600 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+              </button>
+            )}
           </div>
         )}
       </div>
 
-      {/* ====== Stats + switch coins ====== */}
-  {/* Skeleton loader para stats */}
-  {!stats && <div className="mt-6 px-5"><SkeletonRow /></div>}
-      <div className="mt-6 px-5">
-        <div className="flex items-center justify-between mb-2">
-          <div className="text-sm opacity-80 flex items-center gap-2">
-            <FaLock className="opacity-70" />
-            <span>Privacidad de coins</span>
+      {/* Información de contacto editable */}
+      {user?.isAuthenticated && (
+        <div className="mt-4 px-4 space-y-2">
+          {/* Email */}
+          <div className="text-center">
+            {isEditing.email ? (
+              <div className="flex items-center justify-center space-x-2">
+                <input
+                  type="email"
+                  value={tempValues.email}
+                  onChange={(e) => setTempValues(prev => ({ ...prev, email: e.target.value }))}
+                  className="text-sm text-gray-600 bg-transparent border-b border-gray-300 text-center focus:outline-none focus:border-blue-500"
+                  placeholder="Correo electrónico"
+                />
+                <button 
+                  onClick={() => saveEdit('email')}
+                  className="text-green-600 hover:text-green-700"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={() => toggleEdit('email')}
+                className="text-sm text-gray-600 hover:text-blue-600 transition-colors flex items-center justify-center space-x-1"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                </svg>
+                <span>{user?.email || 'Agregar correo'}</span>
+              </button>
+            )}
           </div>
-          <label className="inline-flex items-center gap-2 cursor-pointer">
-            <span className="text-sm">Mostrar coins</span>
-            <input
-              type="checkbox"
-              className="accent-cyan-400"
-              checked={showCoins}
-              onChange={onToggleCoins}
-            />
-          </label>
-        </div>
 
-        <div className="grid grid-cols-3 gap-3">
-          <StatCard
-            icon={<GiTwoCoins />}
-            label={CONFIG.labels.coins}
-            value={stats?.coins ?? 0}
-            glowHex={CONFIG.brand.neon}
-            helpTitle={CONFIG.help.coins.title}
-            helpBody={CONFIG.help.coins.body}
-            hidden={!showCoins}
-          />
-          <StatCard
-            icon={<MdLocalActivity />}
-            label={CONFIG.labels.points}
-            value={stats?.points ?? 0}
-            glowHex={"#FF3BF5"}
-            helpTitle={CONFIG.help.points.title}
-            helpBody={`${CONFIG.help.points.body} Equivalencia sugerida: ${CONFIG.equivalences.pointsPerCoin} pts = 1 coin.`}
-          />
-          <StatCard
-            icon={<FaFire />}
-            label={CONFIG.labels.level}
-            value={`Lv. ${stats?.level ?? 1}`}
-            glowHex={"#32E676"}
-            helpTitle={CONFIG.help.level.title}
-            helpBody={`${CONFIG.help.level.body} Recompensa sugerida: +${CONFIG.equivalences.coinsPerLevelUp} coins por nivel.`}
-          />
-        </div>
-
-        <div className="mt-3">
-          <button
-            onClick={goShop}
-            className="w-full py-3 rounded-full font-extrabold bg-[var(--neon)] text-black"
-            style={
-              {
-    // @ts-expect-error: Next.js recomienda usar <Image /> pero aquí se permite <img> para previsualización local
-                "--neon": CONFIG.brand.neon,
-                boxShadow: `0 0 18px ${CONFIG.brand.neon}88`,
-              } as React.CSSProperties
-            }
-          >
-            {CONFIG.labels.redeem}
-          </button>
-        </div>
-      </div>
-
-      {/* ====== VS / Torneos (sin cambios visuales) ====== */}
-      {/* Botón de cerrar sesión al final de la sección de edición */}
-      {sessionUser && editMode && (
-        <div className="mt-8 flex justify-center">
-          <button
-            onClick={onLogout}
-            className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold border border-white/10 transition"
-            title="Cerrar sesión"
-          >
-            Cerrar sesión
-          </button>
+          {/* Teléfono */}
+          <div className="text-center">
+            {isEditing.phone ? (
+              <div className="flex items-center justify-center space-x-2">
+                <input
+                  type="tel"
+                  value={tempValues.phone}
+                  onChange={(e) => setTempValues(prev => ({ ...prev, phone: e.target.value }))}
+                  className="text-sm text-gray-600 bg-transparent border-b border-gray-300 text-center focus:outline-none focus:border-blue-500"
+                  placeholder="Número de teléfono"
+                />
+                <button 
+                  onClick={() => saveEdit('phone')}
+                  className="text-green-600 hover:text-green-700"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={() => toggleEdit('phone')}
+                className="text-sm text-gray-600 hover:text-blue-600 transition-colors flex items-center justify-center space-x-1"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                <span>{user?.phone || 'Agregar teléfono'}</span>
+              </button>
+            )}
+          </div>
         </div>
       )}
-      <div className="mt-5 px-5">
-        <div className="grid grid-cols-2 gap-3">
-           {/* boton versus */}
-          <button
-            onClick={() => (window.location.href = "/vs")}
-            className="rounded-2xl border border-white/10 bg-gradient-to-br from-fuchsia-600/30 to-transparent hover:from-fuchsia-600/40 transition p-4 flex items-center justify-between"
-          >
-            <div className="flex items-center gap-2">
-              {/* tus espadas blancas */}
-              <GiCrossedSwords className="text-2xl" />
-              <div className="text-sm font-bold">Versus</div>
-            </div>
-            <div className="text-xs opacity-80">Abrir</div>
-          </button>
 
-          <button
-            onClick={() => (window.location.href = "/tournaments")}
-            className="rounded-2xl border border-white/10 bg-gradient-to-br from-emerald-500/25 to-transparent hover:from-emerald-500/35 transition p-4 flex items-center justify-between"
-          >
-            <div className="flex items-center gap-2">
-              <TbTournament className="text-xl" />
-              <div className="text-sm font-bold">Torneos</div>
-            </div>
-            <div className="text-xs opacity-80">Abrir</div>
-          </button>
+      {/* Estadísticas básicas en línea */}
+      <div className="flex justify-center items-center space-x-8 mt-6 px-4">
+        <div className="text-center">
+          <div className="text-2xl font-bold text-blue-600">{(user?.totalXp || 0).toLocaleString()}</div>
+          <div className="text-xs text-gray-500 uppercase tracking-wide">Puntos</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-bold text-yellow-600">{(user?.totalCoins || 0).toLocaleString()}</div>
+          <div className="text-xs text-gray-500 uppercase tracking-wide">Coins</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-bold text-purple-600">{user?.level || 1}</div>
+          <div className="text-xs text-gray-500 uppercase tracking-wide">Level</div>
         </div>
       </div>
 
-      {/* ====== Tabs de actividad (ocupan el ancho completo) ====== */}
-      <div className="mt-6 px-5">
-        <div className="grid grid-cols-3 gap-2">
-          <button
-            onClick={() => setActiveTab("likes")}
-            className={`rounded-full border px-4 py-2 text-sm flex items-center justify-center gap-2 ${
-              activeTab === "likes"
-                ? "border-white/30 bg-white/10"
-                : "border-white/10 bg-white/5"
-            }`}
-          >
-            <MdFavorite /> Likes
-          </button>
-          <button
-            onClick={() => setActiveTab("saves")}
-            className={`rounded-full border px-4 py-2 text-sm flex items-center justify-center gap-2 ${
-              activeTab === "saves"
-                ? "border-white/30 bg-white/10"
-                : "border-white/10 bg-white/5"
-            }`}
-          >
-            <MdBookmark /> Guardados
-          </button>
-          <button
-            onClick={() => setActiveTab("history")}
-            className={`rounded-full border px-4 py-2 text-sm flex items-center justify-center gap-2 ${
-              activeTab === "history"
-                ? "border-white/30 bg-white/10"
-                : "border-white/10 bg-white/5"
-            }`}
-          >
-            <FaFire /> Historial
-          </button>
+      {/* Barra de progreso animada */}
+      <div className="mt-6 px-6">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium text-gray-600">
+            Nivel {user?.level || 1} → {(user?.level || 1) + 1}
+          </span>
+          <span className="text-sm text-gray-500">
+            {Math.round(levelProgress)}%
+          </span>
         </div>
-
-        <div className="mt-3">{renderActivity()}</div>
+        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+          <motion.div
+            className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"
+            initial={{ width: 0 }}
+            animate={{ width: `${levelProgress}%` }}
+            transition={{ duration: 2, ease: "easeOut" }}
+          />
+        </div>
+        <div className="text-center mt-2">
+          <span className="text-xs text-gray-500">
+            {(nextLevelXp - (user?.totalXp || 0)).toLocaleString()} XP para el siguiente nivel
+          </span>
+        </div>
       </div>
 
-      {/* Animación global del aro */}
-      <style jsx global>{`
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
+      {/* Botones de secciones */}
+      <div className="flex justify-center space-x-4 mt-8 px-4">
+        <button
+          onClick={() => toggleSection('stats')}
+          className={`flex-1 max-w-[120px] py-3 px-4 rounded-lg font-medium transition-all ${
+            activeSection === 'stats'
+              ? 'bg-blue-600 text-white shadow-lg scale-105'
+              : 'bg-white text-gray-600 border border-gray-200 hover:border-blue-300'
+          }`}
+        >
+          <div className="flex flex-col items-center space-y-1">
+            <span className="text-lg">📊</span>
+            <span className="text-xs">Estadísticas</span>
+          </div>
+        </button>
+        
+        <button
+          onClick={() => toggleSection('wallet')}
+          className={`flex-1 max-w-[120px] py-3 px-4 rounded-lg font-medium transition-all ${
+            activeSection === 'wallet'
+              ? 'bg-green-600 text-white shadow-lg scale-105'
+              : 'bg-white text-gray-600 border border-gray-200 hover:border-green-300'
+          }`}
+        >
+          <div className="flex flex-col items-center space-y-1">
+            <span className="text-lg">💳</span>
+            <span className="text-xs">Wallet</span>
+          </div>
+        </button>
+        
+        <button
+          onClick={() => toggleSection('shop')}
+          className={`flex-1 max-w-[120px] py-3 px-4 rounded-lg font-medium transition-all ${
+            activeSection === 'shop'
+              ? 'bg-purple-600 text-white shadow-lg scale-105'
+              : 'bg-white text-gray-600 border border-gray-200 hover:border-purple-300'
+          }`}
+        >
+          <div className="flex flex-col items-center space-y-1">
+            <span className="text-lg">🛍️</span>
+            <span className="text-xs">Shop</span>
+          </div>
+        </button>
+      </div>
+
+      {/* Contenido desplegable */}
+      {activeSection && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="mt-6 mx-4 bg-white rounded-xl shadow-lg overflow-hidden"
+        >
+          {activeSection === 'stats' && (
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <span className="text-blue-600 mr-2">📊</span>
+                Estadísticas Detalladas
+              </h3>
+              <StatsGridProGarmin />
+            </div>
+          )}
+
+          {activeSection === 'wallet' && (
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <span className="text-green-600 mr-2">💳</span>
+                Wallet & Información Personal
+              </h3>
+              
+              {/* Botones de autenticación si no está logueado */}
+              {!user?.isAuthenticated && (
+                <div className="bg-blue-50 rounded-lg p-4 border border-blue-200 mb-4">
+                  <h4 className="font-medium text-blue-800 mb-3 text-center">
+                    🔐 Acceso Requerido
+                  </h4>
+                  <p className="text-sm text-blue-600 text-center mb-4">
+                    Inicia sesión o crea una cuenta para acceder a tu wallet
+                  </p>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setAuthMode('login')}
+                      className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Iniciar Sesión
+                    </button>
+                    <button
+                      onClick={() => setAuthMode('register')}
+                      className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      Registrarse
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              {/* Botón de cerrar sesión si está logueado */}
+              {user?.isAuthenticated && (
+                <div className="bg-red-50 rounded-lg p-4 border border-red-200 mb-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-red-800">Sesión Activa</h4>
+                      <p className="text-sm text-red-600">Conectado como {user.email}</p>
+                    </div>
+                    <button
+                      onClick={handleSignOut}
+                      className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                      Cerrar Sesión
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              <div className="grid grid-cols-1 gap-4">
+                {/* Información personal oculta/privada */}
+                {user?.isAuthenticated && (
+                  <div className="bg-gray-50 rounded-lg p-4 border">
+                    <h4 className="font-medium text-gray-700 mb-3 flex items-center">
+                      <svg className="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      Información Personal Privada
+                      <span className="ml-2 text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full">🔒 Privado</span>
+                    </h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center p-3 bg-white rounded border">
+                        <span className="text-sm font-medium text-gray-700">Nombre</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm text-gray-600">{user?.name || 'No definido'}</span>
+                          <button 
+                            onClick={() => toggleEdit('name')}
+                            className="text-gray-400 hover:text-blue-600"
+                          >
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-between items-center p-3 bg-white rounded border">
+                        <span className="text-sm font-medium text-gray-700">Email</span>
+                        <div className="flex items-center space-x-2">
+                          {isEditing.email ? (
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="email"
+                                value={tempValues.email}
+                                onChange={(e) => setTempValues(prev => ({ ...prev, email: e.target.value }))}
+                                className="text-sm text-gray-600 bg-transparent border-b border-blue-500 focus:outline-none"
+                              />
+                              <button onClick={() => saveEdit('email')} className="text-green-600">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <span className="text-sm text-gray-600">••••••@••••.com</span>
+                              <button 
+                                onClick={() => toggleEdit('email')}
+                                className="text-gray-400 hover:text-blue-600"
+                              >
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                </svg>
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-between items-center p-3 bg-white rounded border">
+                        <span className="text-sm font-medium text-gray-700">Teléfono</span>
+                        <div className="flex items-center space-x-2">
+                          {isEditing.phone ? (
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="tel"
+                                value={tempValues.phone}
+                                onChange={(e) => setTempValues(prev => ({ ...prev, phone: e.target.value }))}
+                                className="text-sm text-gray-600 bg-transparent border-b border-blue-500 focus:outline-none"
+                              />
+                              <button onClick={() => saveEdit('phone')} className="text-green-600">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <span className="text-sm text-gray-600">••• ••• ••••</span>
+                              <button 
+                                onClick={() => toggleEdit('phone')}
+                                className="text-gray-400 hover:text-blue-600"
+                              >
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                </svg>
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Métodos de pago */}
+                <div className="bg-gray-50 rounded-lg p-4 border">
+                  <h4 className="font-medium text-gray-700 mb-3 flex items-center">
+                    <svg className="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                    Métodos de Pago
+                  </h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center p-3 bg-white rounded border">
+                      <span className="text-sm">****4532</span>
+                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Activa</span>
+                    </div>
+                    <button className="w-full p-3 border-dashed border-2 border-gray-300 rounded text-gray-500 hover:border-green-500">
+                      + Agregar tarjeta
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Direcciones */}
+                <div className="bg-gray-50 rounded-lg p-4 border">
+                  <h4 className="font-medium text-gray-700 mb-3 flex items-center">
+                    <svg className="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Direcciones
+                  </h4>
+                  <div className="space-y-2">
+                    <div className="p-3 bg-white rounded border">
+                      <p className="text-sm font-medium">Casa</p>
+                      <p className="text-xs text-gray-600">Calle Example 123</p>
+                    </div>
+                    <button className="w-full p-3 border-dashed border-2 border-gray-300 rounded text-gray-500 hover:border-green-500">
+                      + Agregar dirección
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Balance de coins */}
+                <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg p-4 border border-yellow-200">
+                  <h4 className="font-medium text-gray-700 mb-3 flex items-center">
+                    <span className="text-yellow-600 mr-2">🪙</span>
+                    Balance de Coins
+                  </h4>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-yellow-600">{user?.totalCoins || 0}</div>
+                    <div className="text-sm text-gray-600">Coins disponibles</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeSection === 'shop' && (
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <span className="text-purple-600 mr-2">🛍️</span>
+                Mi Shop
+              </h3>
+              <div className="grid grid-cols-1 gap-4">
+                <div className="bg-gray-50 rounded-lg p-4 border">
+                  <h4 className="font-medium text-gray-700 mb-3">Carrito Actual</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center p-3 bg-white rounded border">
+                      <div>
+                        <p className="text-sm font-medium">Producto Demo</p>
+                        <p className="text-xs text-gray-600">Qty: 2</p>
+                      </div>
+                      <span className="text-sm font-semibold text-purple-600">$59.99</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-4 border">
+                  <h4 className="font-medium text-gray-700 mb-3">Historial</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center p-3 bg-white rounded border">
+                      <div>
+                        <p className="text-sm font-medium">Pedido #12345</p>
+                        <p className="text-xs text-gray-600">15 Ago 2024</p>
+                      </div>
+                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Entregado</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </motion.div>
+      )}
+
+      <div className="h-20"></div>
     </div>
   );
 }
-
